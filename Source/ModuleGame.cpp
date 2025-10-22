@@ -5,6 +5,11 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
+class Board {
+
+
+};
+
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	
