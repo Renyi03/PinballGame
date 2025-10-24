@@ -73,6 +73,137 @@ private:
 	Texture2D texture;
 };
 
+class BoardRightWall : public PhysicEntity
+{
+public:
+	static constexpr int boardRightWallVertices[] = {
+		503, 939,
+		503, 342,
+		495, 304,
+		479, 268,
+		460, 240,
+		445, 222,
+		429, 208,
+		413, 196,
+		387, 182,
+		385, 186,
+		414, 204,
+		433, 218,
+		452, 237,
+		466, 256,
+		483, 289,
+		494, 325,
+		494, 467,
+		493, 491,
+		486, 514,
+		472, 532,
+		491, 556,
+		491, 838,
+		454, 838,
+		291, 921,
+		291, 939
+	};
+	BoardRightWall(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardRightWallVertices, 50), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+};
+
+class BoardTube : public PhysicEntity
+{
+public:
+	static constexpr int boardTubeVertices[30] = {
+		439, 498,
+		471, 365,
+		467, 332,
+		451, 292,
+		426, 257,
+		402, 235,
+		369, 209,
+		364, 215,
+		392, 235,
+		422, 262,
+		447, 298,
+		459, 338,
+		458, 365,
+		423, 467,
+		428, 486
+	};
+	BoardTube(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardTubeVertices, 30), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardLeftWall : public PhysicEntity
+{
+public:
+	static constexpr int boardLeftWallVertices[28] = {
+		7 , 389,
+		24, 460,
+		43, 501,
+		66, 533,
+		68, 542,
+		66, 551,
+		47, 570,
+		30, 591,
+		7, 633,
+		7, 838,
+		46, 838,
+		209, 922,
+		208, 939,
+		7, 939
+	};
+	BoardLeftWall(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardLeftWallVertices, 28), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardNearFlippers : public PhysicEntity
+{
+public:
+	static constexpr int boardNearFlippersVertices[12] = {
+		359, 801,
+		447, 756,
+		455, 747,
+		452, 713,
+		440, 727,
+		347, 777
+	};
+	BoardNearFlippers(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersVertices, 12), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	
@@ -87,7 +218,11 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
-	
+	entities.emplace_back(new BoardRightWall(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardTube(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardLeftWall(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardNearFlippers(App->physics, 0, 0, this));
+
 	return ret;
 }
 
