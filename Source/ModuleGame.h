@@ -24,5 +24,7 @@ public:
 
 public:
 	void CreateBoard();
-	
+	void CreateBall();
+	PhysBody* boardBody;
+	PhysBody* ball;
 };
