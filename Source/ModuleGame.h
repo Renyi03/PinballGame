@@ -23,7 +23,7 @@ public:
 	bool CleanUp();
 
 public:
-	void CreateBoard();
+	std::vector<PhysicEntity*> entities;
 	void CreateBall();
 	PhysBody* boardBody;
 	PhysBody* ball;
