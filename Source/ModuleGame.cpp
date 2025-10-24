@@ -35,6 +35,11 @@ bool ModuleGame::CleanUp()
 	return true;
 }
 
+void ModuleGame::CreateBoard()
+{
+
+}
+
 // Update: draw background
 update_status ModuleGame::Update()
 {
