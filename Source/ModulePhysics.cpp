@@ -23,14 +23,14 @@ bool ModulePhysics::Start()
 {
 	LOG("Creating Physics 2D environment");
 
-	world = new b2World(b2Vec2(GRAVITY_X, GRAVITY_Y));
+	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 	
 	return true;
 }
 
 update_status ModulePhysics::PreUpdate()
 {
-
+	world->Step(1.0f / 60.0f, 6, 2);
 	return UPDATE_CONTINUE;
 }
 
@@ -186,6 +186,8 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
+	fixture.friction = 0.3f;
+	fixture.restitution = 0.1f;
 
 	b->CreateFixture(&fixture);
 
@@ -252,7 +254,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 {
 	b2BodyDef body;
-	body.type = b2_dynamicBody;
+	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
