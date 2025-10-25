@@ -360,6 +360,99 @@ private:
 
 };
 
+class BoardLeftPassage : public PhysicEntity
+{
+public:
+	static constexpr int boardLeftPassageVertices[54] = {
+		133, 501,
+		134, 495,
+		124, 468,
+		111, 438,
+		100, 388,
+		100, 354,
+		105, 326,
+		116, 298,
+		129, 278,
+		150, 254,
+		169, 236,
+		192, 219,
+		201, 209,
+		202, 199,
+		190, 184,
+		181, 182,
+		169, 184,
+		151, 196,
+		125, 215,
+		89, 258,
+		69, 306,
+		63, 343,
+		63, 370,
+		70, 414,
+		82, 447,
+		102, 480,
+		126, 504
+	};
+	BoardLeftPassage(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardLeftPassageVertices, 54), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardSmallOvalR : public PhysicEntity
+{
+public:
+	static constexpr int boardSmallOvalRVertices[12] = {
+		311, 163,
+		319, 170,
+		319, 223,
+		310, 230,
+		302, 223,
+		302, 170
+	};
+	BoardSmallOvalR(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalRVertices, 12), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardSmallOvalL : public PhysicEntity
+{
+public:
+	static constexpr int boardSmallOvalLVertices[12] = {
+		252, 163,
+		261, 170,
+		261, 223,
+		253, 230,
+		244, 223,
+		244, 170
+	};
+	BoardSmallOvalL(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalLVertices, 12), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	
@@ -384,6 +477,9 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BoardRhombus(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardOvalR(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardOvalL(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardLeftPassage(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardSmallOvalR(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardSmallOvalL(App->physics, 0, 0, this));
 
 	return ret;
 }
