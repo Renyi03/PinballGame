@@ -453,6 +453,54 @@ private:
 
 };
 
+class YellowBumper : public PhysicEntity
+{
+public:
+	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class RedBumper : public PhysicEntity
+{
+public:
+	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BlueBumper : public PhysicEntity
+{
+public:
+	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	
@@ -480,6 +528,9 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BoardLeftPassage(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardSmallOvalR(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardSmallOvalL(App->physics, 0, 0, this));
+	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this));
+	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
+	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
 
 	return ret;
 }

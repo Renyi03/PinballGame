@@ -140,6 +140,39 @@ bool ModulePhysics::CleanUp()
 	return true;
 }
 
+PhysBody* ModulePhysics::CreateCircularBumper(int x, int y, int radius) {
+	// Create Bumper BODY at position x,y
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	// Add BODY to the world
+	b2Body* b = world->CreateBody(&body);
+
+	// Create Bumper SHAPE
+	b2CircleShape bumpershape;
+	bumpershape.m_radius = PIXEL_TO_METERS(radius);
+	bumpershape.m_p.Set(PIXEL_TO_METERS(0), PIXEL_TO_METERS(0));
+
+	// Create Bumper FIXTURE
+	b2FixtureDef fixture;
+	fixture.shape = &bumpershape;
+	fixture.density = 1.0f;
+	fixture.restitution = 1;
+
+	// Add fixture to the Bumper BODY
+	b->CreateFixture(&fixture);
+
+	// Create our custom PhysBody class
+	PhysBody* pbody = new PhysBody();
+	pbody->body = b;
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+	pbody->width = pbody->height = radius;
+
+	// Return our PhysBody class
+	return pbody;
+}
+
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 {
 	b2BodyDef body;
