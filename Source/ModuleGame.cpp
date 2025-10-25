@@ -180,10 +180,10 @@ private:
 
 };
 
-class BoardNearFlippers : public PhysicEntity
+class BoardNearFlippersR : public PhysicEntity
 {
 public:
-	static constexpr int boardNearFlippersVertices[12] = {
+	static constexpr int boardNearFlippersRVertices[12] = {
 		359, 801,
 		447, 756,
 		455, 747,
@@ -191,8 +191,164 @@ public:
 		440, 727,
 		347, 777
 	};
-	BoardNearFlippers(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersVertices, 12), _listener)
+	BoardNearFlippersR(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardNearFlippersL : public PhysicEntity
+{
+public:
+	static constexpr int boardNearFlippersLVertices[12] = {
+		141, 801,
+		153, 777,
+		60, 727,
+		48, 713,
+		45, 747,
+		53, 756
+	};
+	BoardNearFlippersL(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 12), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardTriangleR : public PhysicEntity
+{
+public:
+	static constexpr int boardTriangleRVertices[20] = {
+		351, 721,
+		364, 722,
+		407, 697,
+		416, 687,
+		416, 617,
+		409, 606,
+		397, 603,
+		387, 610,
+		341, 702,
+		343, 715
+	};
+	BoardTriangleR(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardTriangleRVertices, 20), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardTriangleL : public PhysicEntity
+{
+public:
+	static constexpr int boardTriangleLVertices[20] = {
+		149, 721,
+		157, 715,
+		159, 702,
+		113, 610,
+		103, 603,
+		91, 606,
+		84, 617,
+		84, 687,
+		93, 697,
+		136, 722
+	};
+	BoardTriangleL(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardTriangleLVertices, 20), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardRhombus : public PhysicEntity
+{
+public:
+	static constexpr int boardRhombusVertices[20] = {
+		259, 555,
+		308, 532,
+		312, 522,
+		308, 512,
+		259, 489,
+		245, 489,
+		196, 512,
+		192, 522,
+		196, 532,
+		245, 555
+	};
+	BoardRhombus(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardRhombusVertices, 20), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardOvalR : public PhysicEntity
+{
+public:
+	static constexpr int boardOvalRVertices[12] = {
+		358, 466,
+		371, 466,
+		399, 411,
+		392, 398,
+		377, 400,
+		350, 455
+	};
+	BoardOvalR(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardOvalRVertices, 12), _listener)
+	{
+	}
+	void Update() override
+	{
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class BoardOvalL : public PhysicEntity
+{
+public:
+	static constexpr int boardOvalLVertices[12] = {
+		191, 465,
+		198, 455,
+		169, 398,
+		155, 399,
+		148, 409,
+		176, 465
+	};
+	BoardOvalL(ModulePhysics* physics, int _x, int _y, Module* _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardOvalLVertices, 12), _listener)
 	{
 	}
 	void Update() override
@@ -221,7 +377,13 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BoardRightWall(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardTube(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardLeftWall(App->physics, 0, 0, this));
-	entities.emplace_back(new BoardNearFlippers(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardNearFlippersR(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardNearFlippersL(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardTriangleR(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardTriangleL(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardRhombus(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardOvalR(App->physics, 0, 0, this));
+	entities.emplace_back(new BoardOvalL(App->physics, 0, 0, this));
 
 	return ret;
 }
