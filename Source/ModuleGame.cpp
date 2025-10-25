@@ -498,10 +498,10 @@ public:
 	}
 };
 
-class Circle : public PhysicEntity
+class Ball : public PhysicEntity
 {
 public:
-	Circle(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
+	Ball(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
 		, texture(_texture)
 	{
@@ -578,7 +578,7 @@ void ModuleGame::CreateBall()
 update_status ModuleGame::Update()
 {
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		entities.emplace_back(new Circle(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
+		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
 	return UPDATE_CONTINUE;
 }

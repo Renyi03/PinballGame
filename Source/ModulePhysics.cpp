@@ -30,7 +30,12 @@ bool ModulePhysics::Start()
 
 update_status ModulePhysics::PreUpdate()
 {
-	world->Step(1.0f / 60.0f, 6, 2);
+	float deltaTime = GetFrameTime();
+
+	if (deltaTime > 1.0f / 60.0f)
+		deltaTime = 1.0f / 60.0f;
+
+	world->Step(deltaTime, 6, 2);
 	return UPDATE_CONTINUE;
 }
 

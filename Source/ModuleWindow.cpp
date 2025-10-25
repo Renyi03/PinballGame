@@ -38,7 +38,7 @@ bool ModuleWindow::Init()
 
     SetConfigFlags(flags);
 	InitWindow(width, height, TITLE);
-	//SetTargetFPS(60);
+	SetTargetFPS(targetFPS);
 
 	return ret;
 }
@@ -56,6 +56,11 @@ update_status ModuleWindow::PreUpdate()
 
 update_status ModuleWindow::Update()
 {
+	if (IsKeyPressed(KEY_F1))
+	{
+		targetFPS = (targetFPS == 60) ? 30 : 60;
+		SetTargetFPS(targetFPS);
+	}
 	return UPDATE_CONTINUE;
 }
 
