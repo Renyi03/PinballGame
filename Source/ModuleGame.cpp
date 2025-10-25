@@ -244,7 +244,7 @@ public:
 	351, 721
 	};
 	BoardTriangleR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardTriangleRVertices, 20), _listener)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleRVertices, 20), _listener)
 	{
 	}
 	void Update() override
@@ -272,7 +272,7 @@ public:
 	149, 721
 	};
 	BoardTriangleL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardTriangleLVertices, 20), _listener)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleLVertices, 20), _listener)
 	{
 	}
 	void Update() override
