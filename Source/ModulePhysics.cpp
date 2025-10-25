@@ -145,7 +145,8 @@ update_status ModulePhysics::PostUpdate()
 		else if (charging && IsKeyReleased(KEY_DOWN))
 		{
 			charging = false;
-			float power = std::min(holdTime * 25.0f, 60.0f);
+			float power = std::min(holdTime * 25.0f, 60.0f); 
+			//^^25 is conversion factor from seconds to whatever box2D uses, and 60 is like the max cap of how long you hold
 			holdTime = 0.0f;
 			springLauncherJoint->SetMotorSpeed(power); // Launch
 		}
