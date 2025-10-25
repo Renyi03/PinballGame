@@ -55,6 +55,7 @@ public:
 	PhysBody* CreateChain(int x, int y, const int* points, int size);
 	PhysBody* CreateCircularBumper(int x, int y, int radius);
 	PhysBody* CreateBumper(int x, int y, const int* points, int size);
+	PhysBody* CreateSpringLauncher(int x, int y);
 
 	// b2ContactListener ---
 	void StartContact(b2Contact* contact);
@@ -64,4 +65,8 @@ private:
 	b2World* world = nullptr;
 	bool debug;
 	
+	//launcher things
+	b2PrismaticJoint* springLauncherJoint = nullptr;
+	b2Body* springPlungerBody = nullptr;
+
 };

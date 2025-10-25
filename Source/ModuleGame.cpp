@@ -498,6 +498,25 @@ public:
 	}
 };
 
+class SpringLauncherEntity : public PhysicEntity
+{
+public:
+	SpringLauncherEntity(ModulePhysics* physics, int x, int y, Module* listener)
+		: PhysicEntity(physics->CreateSpringLauncher(x, y), listener)
+	{
+	}
+
+	void Update() override
+	{
+		
+		
+	}
+
+private:
+	Texture2D texture;
+};
+
+
 class Ball : public PhysicEntity
 {
 public:
@@ -556,6 +575,9 @@ bool ModuleGame::Start()
 	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
+	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
+	entities.emplace_back(new Ball(App->physics, 480, 200, this, ballTexture));
+
 
 	return ret;
 }
