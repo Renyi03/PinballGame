@@ -54,6 +54,7 @@ public:
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
 	PhysBody* CreateChain(int x, int y, const int* points, int size);
 	PhysBody* CreateCircularBumper(int x, int y, int radius);
+	PhysBody* CreateBumper(int x, int y, const int* points, int size);
 
 	// b2ContactListener ---
 	void StartContact(b2Contact* contact);
