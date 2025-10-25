@@ -128,35 +128,6 @@ update_status ModulePhysics::PostUpdate()
 			
 		}
 	}
-
-	//we can more this code if needed. but this code is to detect how long player is holding down key to influence spring power
-	//and launching ball once key is released
-	if (springLauncherJoint != nullptr)
-	{
-		static float holdTime = 0.0f;
-		static bool charging = false;
-
-		if (IsKeyDown(KEY_DOWN))
-		{
-			charging = true;
-			holdTime += GetFrameTime();
-			springLauncherJoint->SetMotorSpeed(-1.0f); // Pull down
-		}
-		else if (charging && IsKeyReleased(KEY_DOWN))
-		{
-			charging = false;
-			float power = std::min(holdTime * 25.0f, 60.0f); 
-			//^^25 is conversion factor from seconds to whatever box2D uses, and 60 is like the max cap of how long you hold
-			holdTime = 0.0f;
-			springLauncherJoint->SetMotorSpeed(power); // Launch
-		}
-		else
-		{
-			springLauncherJoint->SetMotorSpeed(0.0f);
-		}
-	}
-
-
 	
 	return UPDATE_CONTINUE;
 }
@@ -355,12 +326,15 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 }
 
 
-PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y) {
-	//launcher base
+PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
+	
 	b2BodyDef baseDef;
 	baseDef.type = b2_staticBody;
 	baseDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 	b2Body* base = world->CreateBody(&baseDef);
+
+	// for taking the base to the game class
+	outBase = base;
 
 	//plunger
 	b2BodyDef plungerDef;
@@ -377,28 +351,10 @@ PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y) {
 	fixtureDef.friction = 0.5f;
 	plunger->CreateFixture(&fixtureDef);
 
-	//prismatic joint
-	b2PrismaticJointDef jointDef;
-	b2Vec2 axis(0.0f, -1.0f); // vertical movement only
-	jointDef.Initialize(base, plunger, base->GetWorldCenter(), axis);
-	jointDef.enableLimit = true;
-	jointDef.lowerTranslation = -PIXEL_TO_METERS(80);
-	jointDef.upperTranslation = PIXEL_TO_METERS(0);
-	jointDef.enableMotor = true;
-	jointDef.maxMotorForce = 3000.0f;
-	jointDef.motorSpeed = 0.0f;
-
-	b2PrismaticJoint* joint = (b2PrismaticJoint*)world->CreateJoint(&jointDef);
-	
-	springLauncherJoint = joint;
-	springPlungerBody = plunger;
-
-	// return as PhysBody so game can draw it 
 	PhysBody* body = new PhysBody();
 	body->body = plunger;
 	body->width = 20;
 	body->height = 40;
-
 	return body;
 }
 
