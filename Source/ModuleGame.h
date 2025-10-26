@@ -8,6 +8,8 @@
 #include "raylib.h"
 #include <vector>
 
+#include "Box2D/Box2D.h"
+
 class PhysBody;
 class PhysicEntity;
 
@@ -28,4 +30,6 @@ public:
 	void CreateBall();
 	PhysBody* boardBody;
 	PhysBody* ball;
+	b2RevoluteJoint* leftJoint;
+	b2RevoluteJoint* rightJoint;
 };

@@ -220,6 +220,76 @@ PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 	return pbody;
 }
 
+PhysBody* ModulePhysics::CreateLeftFlipper(int x, int y, b2RevoluteJoint*& joint)
+{
+	//we created the flipper rectangle
+	PhysBody* Leftflipper = CreateRectangle(x, y, 90, 25);
+	
+	//we created the static pivot body
+	b2BodyDef pivotDef;
+	pivotDef.type = b2_staticBody;
+	pivotDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	b2Body* pivot = world->CreateBody(&pivotDef);
+	
+	//we created the revolute joint that connects the pivot with the flipper
+	b2RevoluteJointDef jointDef;
+	jointDef.bodyA = pivot;				//this is the static pivot
+	jointDef.bodyB = Leftflipper->body;		//this is the dynamic flipper
+	
+	//we set the local anchor points (where the rotation happens)
+	jointDef.localAnchorA.Set(0, 0);
+	jointDef.localAnchorB.Set(-PIXEL_TO_METERS(40), 0);
+	
+	//we enabled the rotation limits of the flilpper
+	jointDef.enableLimit = true;			//turn on joint angle limits
+	jointDef.lowerAngle = -30 * DEGTORAD;	//this is the lowest angle it can rotate to		DEGTORAD changes from degrees to radiants
+	jointDef.upperAngle = 30 * DEGTORAD;	//this is the highest angle it can rotate to
+	
+	//we enabled the motor that powers the fipper movement
+	jointDef.enableMotor = true;			//turn on motor funcionality
+	jointDef.motorSpeed = 0.0f;				//we will change it dynamically
+	jointDef.maxMotorTorque = 900.0f;		//the strenght of the motor
+	
+	joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
+
+	return Leftflipper;
+}
+
+PhysBody* ModulePhysics::CreateRightFlipper(int x, int y, b2RevoluteJoint*& joint)
+{
+	//we created the flipper rectangle
+	PhysBody* Rightflipper = CreateRectangle(x, y, 90, 25);
+
+	//we created the static pivot body
+	b2BodyDef pivotDef;
+	pivotDef.type = b2_staticBody;
+	pivotDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	b2Body* pivot = world->CreateBody(&pivotDef);
+
+	//we created the revolute joint that connects the pivot with the flipper
+	b2RevoluteJointDef jointDef;
+	jointDef.bodyA = pivot;				//this is the static pivot
+	jointDef.bodyB = Rightflipper->body;		//this is the dynamic flipper
+
+	//we set the local anchor points (where the rotation happens)
+	jointDef.localAnchorA.Set(0, 0);
+	jointDef.localAnchorB.Set(PIXEL_TO_METERS(40), 0);
+
+	//we enabled the rotation limits of the flilpper
+	jointDef.enableLimit = true;			//turn on joint angle limits
+	jointDef.lowerAngle = -30 * DEGTORAD;	//this is the lowest angle it can rotate to
+	jointDef.upperAngle = 30 * DEGTORAD;	//this is the highest angle it can rotate to
+
+	//we enabled the motor that powers the fipper movement
+	jointDef.enableMotor = true;			//turn on motor funcionality
+	jointDef.motorSpeed = 0.0f;				//we will change it dynamically
+	jointDef.maxMotorTorque = 900.0f;		//the strenght of the motor
+
+	joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
+
+	return Rightflipper;
+}
+
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 {
 	b2BodyDef body;
