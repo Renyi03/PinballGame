@@ -564,7 +564,7 @@ ModuleGame::~ModuleGame()
 bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
-	ballTexture = LoadTexture("Assets/wheel.png");
+	ballTexture = LoadTexture("Assets/Turbo.png");
 	bool ret = true;
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardRightWall(App->physics, 0, 0, this));
@@ -593,12 +593,6 @@ bool ModuleGame::CleanUp()
 	LOG("Unloading Intro scene");
 
 	return true;
-}
-
-void ModuleGame::CreateBall()
-{
-	LOG("Creating circle");
-	App->physics->CreateCircle(GetMouseX(), GetMouseY(), 50);
 }
 
 // Update: draw background
