@@ -32,8 +32,14 @@ update_status ModulePhysics::PreUpdate()
 {
 	float deltaTime = GetFrameTime();
 
-	if (deltaTime > 1.0f / 60.0f)
-		deltaTime = 1.0f / 60.0f;
+	if (GetFPS() == 60) {
+		if (deltaTime > 1.0f / 60.0f)
+			deltaTime = 1.0f / 60.0f;
+	}
+	else if (GetFPS() == 30) {
+		if (deltaTime > 1.0f / 30.0f)
+			deltaTime = 1.0f / 30.0f;
+	}
 
 	world->Step(deltaTime, 6, 2);
 	return UPDATE_CONTINUE;
