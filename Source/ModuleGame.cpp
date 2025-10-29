@@ -555,10 +555,7 @@ public:
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
 			}
-			else
-			{
-				springLauncherJoint->SetMotorSpeed(0.0f);
-			}
+
 		}
 		
 	}
@@ -685,16 +682,16 @@ update_status ModuleGame::Update()
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
 	if (IsKeyDown(KEY_LEFT)) {
-		leftJoint->SetMotorSpeed(-15.0f);
+		leftJoint->SetMotorSpeed(-13.0f);
 	}
 	else {
-		leftJoint->SetMotorSpeed(15.0f);
+		leftJoint->SetMotorSpeed(13.0f);
 	}
 	if (IsKeyDown(KEY_RIGHT)) {
-		rightJoint->SetMotorSpeed(15.0f);
+		rightJoint->SetMotorSpeed(13.0f);
 	}
 	else {
-		rightJoint->SetMotorSpeed(-15.0f);
+		rightJoint->SetMotorSpeed(-13.0f);
 	}
 	return UPDATE_CONTINUE;
 }

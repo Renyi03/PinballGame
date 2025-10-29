@@ -222,7 +222,7 @@ PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 PhysBody* ModulePhysics::CreateLeftFlipper(int x, int y, b2RevoluteJoint*& joint)
 {
 	//we created the flipper rectangle
-	PhysBody* Leftflipper = CreateRectangle(x, y, 90, 25);
+	PhysBody* Leftflipper = CreateRectangle(x, y, 92, 25);
 	
 	//we created the static pivot body
 	b2BodyDef pivotDef;
@@ -257,7 +257,7 @@ PhysBody* ModulePhysics::CreateLeftFlipper(int x, int y, b2RevoluteJoint*& joint
 PhysBody* ModulePhysics::CreateRightFlipper(int x, int y, b2RevoluteJoint*& joint)
 {
 	//we created the flipper rectangle
-	PhysBody* Rightflipper = CreateRectangle(x, y, 90, 25);
+	PhysBody* Rightflipper = CreateRectangle(x, y, 92, 25);
 
 	//we created the static pivot body
 	b2BodyDef pivotDef;
@@ -363,6 +363,33 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = width;
 	pbody->height = height;
+
+	return pbody;
+}
+
+PhysBody* ModulePhysics::CreateCircleSensor(int x, int y, int radius)
+{
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* b = world->CreateBody(&body);
+
+	b2CircleShape shape;
+	shape.m_radius = PIXEL_TO_METERS(radius);
+
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+	fixture.density = 1.0f;
+	fixture.restitution = 0.1f;
+	fixture.isSensor = true;
+
+	b->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = b;
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+	pbody->width = pbody->height = radius;
 
 	return pbody;
 }
