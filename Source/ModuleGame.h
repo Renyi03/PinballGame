@@ -12,6 +12,7 @@
 
 class PhysBody;
 class PhysicEntity;
+class Ball;
 
 
 class ModuleGame : public Module
@@ -33,4 +34,5 @@ public:
 	PhysBody* ball;
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
+	Ball* balls;
 };

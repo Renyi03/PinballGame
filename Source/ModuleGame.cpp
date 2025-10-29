@@ -19,6 +19,15 @@ protected:
 public:
 	virtual ~PhysicEntity() = default;
 	virtual void Update() = 0;
+	Vector2 PhysicEntity::GetPosition() const
+	{
+		int x, y;
+		body->GetPosition(x,y);
+		Vector2 result;
+		result.x = x;
+		result.y = y;
+		return result;
+	}
 
 	virtual int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal)
 	{
@@ -591,6 +600,7 @@ public:
 		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
 		float rotation = body->GetRotation() * RAD2DEG;
 		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
+
 	}
 private:
 	Texture2D texture;
@@ -656,7 +666,8 @@ bool ModuleGame::Start()
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
-	entities.emplace_back(new Ball(App->physics, 480, 200, this, ballTexture));
+	balls = new Ball(App->physics, 480, 200, this, ballTexture);
+	entities.emplace_back(balls);
 
 
 	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
@@ -696,5 +707,13 @@ update_status ModuleGame::Update()
 	else {
 		rightJoint->SetMotorSpeed(-15.0f);
 	}
+
+
+	if (balls->GetPosition().y >= 900.0f) {
+		delete balls;
+		balls = new Ball(App->physics, 480, 200, this, ballTexture);
+		entities.emplace_back(balls);
+	}
+
 	return UPDATE_CONTINUE;
 }
