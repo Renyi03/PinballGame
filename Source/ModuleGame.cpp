@@ -659,6 +659,10 @@ bool ModuleGame::Start()
 	entities.emplace_back(new Ball(App->physics, 480, 200, this, ballTexture));
 
 
+	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
+	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+70, SCREEN_HEIGHT-140, rightJoint);
+
+
 	return ret;
 }
 
@@ -679,6 +683,18 @@ update_status ModuleGame::Update()
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
+	}
+	if (IsKeyDown(KEY_LEFT)) {
+		leftJoint->SetMotorSpeed(-15.0f);
+	}
+	else {
+		leftJoint->SetMotorSpeed(15.0f);
+	}
+	if (IsKeyDown(KEY_RIGHT)) {
+		rightJoint->SetMotorSpeed(15.0f);
+	}
+	else {
+		rightJoint->SetMotorSpeed(-15.0f);
 	}
 	return UPDATE_CONTINUE;
 }
