@@ -12,7 +12,9 @@
 
 class PhysBody;
 class PhysicEntity;
-
+class Ball;
+class BoardTriangleR;
+class SpringLauncherEntity;
 
 class ModuleGame : public Module
 {
@@ -23,14 +25,19 @@ public:
 	bool Start();
 	update_status Update();
 	bool CleanUp();
+	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 
 public:
 	std::vector<PhysicEntity*> entities;
 	Texture2D ballTexture;
 
 	void CreateBall();
-	PhysBody* boardBody;
-	PhysBody* ball;
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
+	Ball* ball;
+	BoardTriangleR* boardTriangleR;
+	SpringLauncherEntity* springLauncherEntity;
+	int currentScore;
+	int previousScore;
+	int highestScore;
 };

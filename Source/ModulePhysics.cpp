@@ -24,6 +24,7 @@ bool ModulePhysics::Start()
 	LOG("Creating Physics 2D environment");
 
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
+	world->SetContactListener(this);
 	
 	return true;
 }
@@ -152,9 +153,11 @@ bool ModulePhysics::CleanUp()
 
 PhysBody* ModulePhysics::CreateCircularBumper(int x, int y, int radius) {
 	// Create Bumper BODY at position x,y
+	PhysBody* pbody = new PhysBody();
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	// Add BODY to the world
 	b2Body* b = world->CreateBody(&body);
@@ -174,9 +177,9 @@ PhysBody* ModulePhysics::CreateCircularBumper(int x, int y, int radius) {
 	b->CreateFixture(&fixture);
 
 	// Create our custom PhysBody class
-	PhysBody* pbody = new PhysBody();
+	
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+	
 	pbody->width = pbody->height = radius;
 
 	// Return our PhysBody class
@@ -185,9 +188,11 @@ PhysBody* ModulePhysics::CreateCircularBumper(int x, int y, int radius) {
 
 PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 {
+	PhysBody* pbody = new PhysBody();
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -211,9 +216,9 @@ PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 
 	delete p;
 
-	PhysBody* pbody = new PhysBody();
+	
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
+	
 	pbody->width = pbody->height = 0;
 
 	return pbody;
@@ -291,9 +296,11 @@ PhysBody* ModulePhysics::CreateRightFlipper(int x, int y, b2RevoluteJoint*& join
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 {
+	PhysBody* pbody = new PhysBody();
 	b2BodyDef body;
 	body.type = b2_dynamicBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -307,9 +314,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 
 	b->CreateFixture(&fixture);
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = pbody->height = radius;
 
 	return pbody;
@@ -317,9 +322,11 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 
 PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 {
+	PhysBody* pbody = new PhysBody();
 	b2BodyDef body;
 	body.type = b2_dynamicBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 	b2PolygonShape box;
@@ -331,9 +338,7 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 
 	b->CreateFixture(&fixture);
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = (int)(width * 0.5f);
 	pbody->height = (int)(height * 0.5f);
 
@@ -342,9 +347,11 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 
 PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height)
 {
+	PhysBody* pbody = new PhysBody();
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -358,9 +365,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 
 	b->CreateFixture(&fixture);
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = width;
 	pbody->height = height;
 
@@ -369,9 +374,11 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 
 PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 {
+	PhysBody* pbody = new PhysBody();
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -393,9 +400,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 
 	delete p;
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = pbody->height = 0;
 
 	return pbody;
@@ -434,8 +439,10 @@ PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
 	return body;
 }
 
-void ModulePhysics::StartContact(b2Contact* contact)
+void ModulePhysics::BeginContact(b2Contact* contact)
 {
+	TraceLog(LOG_INFO, "Collision");
+
 	b2BodyUserData dataA = contact->GetFixtureA()->GetBody()->GetUserData();
 	b2BodyUserData dataB = contact->GetFixtureB()->GetBody()->GetUserData();
 

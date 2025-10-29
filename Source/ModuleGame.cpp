@@ -24,7 +24,10 @@ public:
 	{
 		return 0;
 	}
-
+	PhysBody* GetBody()
+	{
+		return body;
+	}
 protected:
 	PhysBody* body;
 	Module* listener;
@@ -644,7 +647,8 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BoardLeftWall(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardNearFlippersR(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardNearFlippersL(App->physics, 0, 0, this));
-	entities.emplace_back(new BoardTriangleR(App->physics, 0, 0, this));
+	boardTriangleR = new BoardTriangleR(App->physics, 0, 0, this);
+	entities.emplace_back(boardTriangleR);
 	entities.emplace_back(new BoardTriangleL(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardRhombus(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardOvalR(App->physics, 0, 0, this));
@@ -655,9 +659,10 @@ bool ModuleGame::Start()
 	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
-	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
-	entities.emplace_back(new Ball(App->physics, 480, 200, this, ballTexture));
-
+	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
+	entities.emplace_back(springLauncherEntity);
+	ball = new Ball(App->physics, 480, 200, this, ballTexture);
+	entities.emplace_back(ball);
 
 	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
 	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+70, SCREEN_HEIGHT-140, rightJoint);
@@ -674,9 +679,16 @@ bool ModuleGame::CleanUp()
 	return true;
 }
 
+void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
+{
+	LOG("Collision!");
+}
+
 // Update: draw background
 update_status ModuleGame::Update()
 {
+	//OnCollision(ball->GetBody(), springLauncherEntity->GetBody());
+
 	for (auto& entity : entities) {
 		entity->Update();
 	}
