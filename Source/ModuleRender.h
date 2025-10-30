@@ -1,4 +1,5 @@
 #pragma once
+#include "iostream"
 #include "Module.h"
 #include "Globals.h"
 
@@ -21,7 +22,6 @@ public:
     bool DrawText(const char* text, int x, int y, Font font, int spacing, Color tint) const;
 
 public:
-
 	Color background;
     Rectangle camera;
 };

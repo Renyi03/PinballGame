@@ -684,14 +684,19 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	LOG("Collision!");
 }
 
+void ModuleGame::AddScore(int points)
+{
+	currentScore += points;
+}
+
 // Update: draw background
 update_status ModuleGame::Update()
 {
-	//OnCollision(ball->GetBody(), springLauncherEntity->GetBody());
-
 	for (auto& entity : entities) {
 		entity->Update();
 	}
+
+	DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));

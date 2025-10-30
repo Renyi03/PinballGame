@@ -409,10 +409,12 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 
 PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
 	
+	PhysBody* body = new PhysBody();
 	b2BodyDef baseDef;
 	baseDef.type = b2_staticBody;
 	baseDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 	b2Body* base = world->CreateBody(&baseDef);
+	baseDef.userData.pointer = reinterpret_cast<uintptr_t>(body);
 
 	// for taking the base to the game class
 	outBase = base;
@@ -432,7 +434,7 @@ PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
 	fixtureDef.friction = 0.5f;
 	plunger->CreateFixture(&fixtureDef);
 
-	PhysBody* body = new PhysBody();
+	
 	body->body = plunger;
 	body->width = 20;
 	body->height = 40;
