@@ -8,6 +8,8 @@
 #include "raylib.h"
 #include <vector>
 
+#include "Box2D/Box2D.h"
+
 class PhysBody;
 class PhysicEntity;
 class Ball;
@@ -27,7 +29,11 @@ public:
 	std::vector<PhysicEntity*> entities;
 	std::vector<Ball*> balls;
 	Texture2D ballTexture;
+
 	void CreateBall();
 	PhysBody* boardBody;
 	PhysBody* ball;
+	b2RevoluteJoint* leftJoint;
+	b2RevoluteJoint* rightJoint;
+	Ball* balls;
 };

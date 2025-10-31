@@ -20,6 +20,15 @@ protected:
 public:
 	virtual ~PhysicEntity() = default;
 	virtual void Update() = 0;
+	Vector2 PhysicEntity::GetPosition() const
+	{
+		int x, y;
+		body->GetPosition(x,y);
+		Vector2 result;
+		result.x = x;
+		result.y = y;
+		return result;
+	}
 
 	virtual int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal)
 	{
@@ -508,10 +517,110 @@ public:
 	}
 };
 
+class SpringLauncherEntity : public PhysicEntity
+{
+public:
+	SpringLauncherEntity(ModulePhysics* physics, int x, int y, Module* listener)
+		: PhysicEntity(nullptr, listener)
+	{
+		// Get both the plunger and the base from physics
+		b2Body* baseBody = nullptr;
+		PhysBody* plungerBody = physics->CreateSpringLauncher(x, y, baseBody);
+
+		// Store bodies
+		springPlungerBody = plungerBody->body;
+		springLauncherJoint = nullptr;
+		// Create prismatic joint connecting base and plunger
+		b2PrismaticJointDef jointDef;
+		b2Vec2 axis(0.0f, -1.0f); // vertical movement
+		jointDef.Initialize(baseBody, springPlungerBody, baseBody->GetWorldCenter(), axis);
+
+		jointDef.enableLimit = true;
+		jointDef.lowerTranslation = -PIXEL_TO_METERS(80);
+		jointDef.upperTranslation = PIXEL_TO_METERS(0);
+
+		jointDef.enableMotor = true;
+		jointDef.maxMotorForce = 1500.0f;
+		jointDef.motorSpeed = 0.0f;
+
+		b2PrismaticJoint* joint = (b2PrismaticJoint*)physics->GetWorld()->CreateJoint(&jointDef);
+
+		springLauncherJoint = joint;
+
+		body = plungerBody;
+
+	}
+
+	void Update() override
+	{
+		//we can more this code if needed. but this code is to detect how long player is holding down key to influence spring power
+	//and launching ball once key is released
+		if (springLauncherJoint != nullptr)
+		{
+			static float holdTime = 0.0f;
+			static bool charging = false;
+
+			if (IsKeyDown(KEY_DOWN))
+			{
+				charging = true;
+				holdTime += GetFrameTime();
+				springLauncherJoint->SetMotorSpeed(-1.0f); // Pull down
+			}
+			else if (charging && IsKeyReleased(KEY_DOWN))
+			{
+				charging = false;
+				float power = std::min(holdTime * 25.0f, 60.0f);
+				//^^25 is conversion factor from seconds to whatever box2D uses, and 60 is like the max cap of how long you hold
+				holdTime = 0.0f;
+				springLauncherJoint->SetMotorSpeed(power); // Launch
+			}
+			else
+			{
+				springLauncherJoint->SetMotorSpeed(0.0f);
+			}
+		}
+		
+	}
+
+private:
+	Texture2D texture;
+	b2PrismaticJoint* springLauncherJoint = nullptr;
+	b2Body* springPlungerBody = nullptr;
+};
+
+
 class Ball : public PhysicEntity
 {
 public:
 	Ball(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
+		, texture(_texture)
+	{
+
+	}
+
+	void Update() override
+	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		float scale = 1.0f;
+		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
+		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
+		float rotation = body->GetRotation() * RAD2DEG;
+		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
+
+	}
+private:
+	Texture2D texture;
+
+};
+
+class Spring : public PhysicEntity
+{
+public:
+	Spring(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
 		, texture(_texture)
 	{
@@ -562,7 +671,7 @@ ModuleGame::~ModuleGame()
 bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
-	ballTexture = LoadTexture("Assets/wheel.png");
+	ballTexture = LoadTexture("Assets/Turbo.png");
 	bool ret = true;
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
 	entities.emplace_back(new BoardRightWall(App->physics, 0, 0, this));
@@ -581,6 +690,14 @@ bool ModuleGame::Start()
 	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
+	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
+	balls = new Ball(App->physics, 480, 200, this, ballTexture);
+	entities.emplace_back(balls);
+
+
+	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
+	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+70, SCREEN_HEIGHT-140, rightJoint);
+
 
 	return ret;
 }
@@ -593,18 +710,36 @@ bool ModuleGame::CleanUp()
 	return true;
 }
 
-void ModuleGame::CreateBall()
-{
-	LOG("Creating circle");
-	App->physics->CreateCircle(GetMouseX(), GetMouseY(), 50);
-}
-
 // Update: draw background
 update_status ModuleGame::Update()
 {
+	for (auto& entity : entities) {
+		entity->Update();
+	}
+
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		balls.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
+	if (IsKeyDown(KEY_LEFT)) {
+		leftJoint->SetMotorSpeed(-15.0f);
+	}
+	else {
+		leftJoint->SetMotorSpeed(15.0f);
+	}
+	if (IsKeyDown(KEY_RIGHT)) {
+		rightJoint->SetMotorSpeed(15.0f);
+	}
+	else {
+		rightJoint->SetMotorSpeed(-15.0f);
+	}
+
+
+	if (balls->GetPosition().y >= 900.0f) {
+		delete balls;
+		balls = new Ball(App->physics, 480, 200, this, ballTexture);
+		entities.emplace_back(balls);
+	}
+
 	return UPDATE_CONTINUE;
 
 	for (PhysicEntity* ball :  balls) {

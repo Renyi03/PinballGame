@@ -4,6 +4,7 @@
 #include "Globals.h"
 
 #include "box2d\box2d.h"
+#include "p2Point.h"
 
 #define GRAVITY_X 0.0f
 #define GRAVITY_Y -7.0f
@@ -56,6 +57,13 @@ public:
 	PhysBody* CreateCircularBumper(int x, int y, int radius);
 	PhysBody* CreateBumper(int x, int y, const int* points, int size);
 
+	PhysBody* CreateSpringLauncher(int x, int y, b2Body*& outBase);
+	b2World* GetWorld() { return world; }
+
+	PhysBody* CreateLeftFlipper(int x, int y, b2RevoluteJoint*& joint);
+	PhysBody* CreateRightFlipper(int x, int y, b2RevoluteJoint*& joint);
+
+
 	// b2ContactListener ---
 	void StartContact(b2Contact* contact);
 
@@ -63,5 +71,4 @@ private:
 
 	b2World* world = nullptr;
 	bool debug;
-	
 };

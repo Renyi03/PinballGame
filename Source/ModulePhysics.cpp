@@ -32,8 +32,14 @@ update_status ModulePhysics::PreUpdate()
 {
 	float deltaTime = GetFrameTime();
 
-	if (deltaTime > 1.0f / 60.0f)
-		deltaTime = 1.0f / 60.0f;
+	if (GetFPS() == 60) {
+		if (deltaTime > 1.0f / 60.0f)
+			deltaTime = 1.0f / 60.0f;
+	}
+	else if (GetFPS() == 30) {
+		if (deltaTime > 1.0f / 30.0f)
+			deltaTime = 1.0f / 30.0f;
+	}
 
 	world->Step(deltaTime, 6, 2);
 	return UPDATE_CONTINUE;
@@ -128,7 +134,6 @@ update_status ModulePhysics::PostUpdate()
 			
 		}
 	}
-
 	
 	return UPDATE_CONTINUE;
 }
@@ -212,6 +217,76 @@ PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 	pbody->width = pbody->height = 0;
 
 	return pbody;
+}
+
+PhysBody* ModulePhysics::CreateLeftFlipper(int x, int y, b2RevoluteJoint*& joint)
+{
+	//we created the flipper rectangle
+	PhysBody* Leftflipper = CreateRectangle(x, y, 90, 25);
+	
+	//we created the static pivot body
+	b2BodyDef pivotDef;
+	pivotDef.type = b2_staticBody;
+	pivotDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	b2Body* pivot = world->CreateBody(&pivotDef);
+	
+	//we created the revolute joint that connects the pivot with the flipper
+	b2RevoluteJointDef jointDef;
+	jointDef.bodyA = pivot;				//this is the static pivot
+	jointDef.bodyB = Leftflipper->body;		//this is the dynamic flipper
+	
+	//we set the local anchor points (where the rotation happens)
+	jointDef.localAnchorA.Set(0, 0);
+	jointDef.localAnchorB.Set(-PIXEL_TO_METERS(40), 0);
+	
+	//we enabled the rotation limits of the flilpper
+	jointDef.enableLimit = true;			//turn on joint angle limits
+	jointDef.lowerAngle = -30 * DEGTORAD;	//this is the lowest angle it can rotate to		DEGTORAD changes from degrees to radiants
+	jointDef.upperAngle = 30 * DEGTORAD;	//this is the highest angle it can rotate to
+	
+	//we enabled the motor that powers the fipper movement
+	jointDef.enableMotor = true;			//turn on motor funcionality
+	jointDef.motorSpeed = 0.0f;				//we will change it dynamically
+	jointDef.maxMotorTorque = 900.0f;		//the strenght of the motor
+	
+	joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
+
+	return Leftflipper;
+}
+
+PhysBody* ModulePhysics::CreateRightFlipper(int x, int y, b2RevoluteJoint*& joint)
+{
+	//we created the flipper rectangle
+	PhysBody* Rightflipper = CreateRectangle(x, y, 90, 25);
+
+	//we created the static pivot body
+	b2BodyDef pivotDef;
+	pivotDef.type = b2_staticBody;
+	pivotDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	b2Body* pivot = world->CreateBody(&pivotDef);
+
+	//we created the revolute joint that connects the pivot with the flipper
+	b2RevoluteJointDef jointDef;
+	jointDef.bodyA = pivot;				//this is the static pivot
+	jointDef.bodyB = Rightflipper->body;		//this is the dynamic flipper
+
+	//we set the local anchor points (where the rotation happens)
+	jointDef.localAnchorA.Set(0, 0);
+	jointDef.localAnchorB.Set(PIXEL_TO_METERS(40), 0);
+
+	//we enabled the rotation limits of the flilpper
+	jointDef.enableLimit = true;			//turn on joint angle limits
+	jointDef.lowerAngle = -30 * DEGTORAD;	//this is the lowest angle it can rotate to
+	jointDef.upperAngle = 30 * DEGTORAD;	//this is the highest angle it can rotate to
+
+	//we enabled the motor that powers the fipper movement
+	jointDef.enableMotor = true;			//turn on motor funcionality
+	jointDef.motorSpeed = 0.0f;				//we will change it dynamically
+	jointDef.maxMotorTorque = 900.0f;		//the strenght of the motor
+
+	joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
+
+	return Rightflipper;
 }
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
@@ -324,6 +399,39 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 	pbody->width = pbody->height = 0;
 
 	return pbody;
+}
+
+
+PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
+	
+	b2BodyDef baseDef;
+	baseDef.type = b2_staticBody;
+	baseDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	b2Body* base = world->CreateBody(&baseDef);
+
+	// for taking the base to the game class
+	outBase = base;
+
+	//plunger
+	b2BodyDef plungerDef;
+	plungerDef.type = b2_dynamicBody;
+	plungerDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y + 20));
+	b2Body* plunger = world->CreateBody(&plungerDef);
+
+	b2PolygonShape plungerShape;
+	plungerShape.SetAsBox(PIXEL_TO_METERS(10), PIXEL_TO_METERS(20));
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &plungerShape;
+	fixtureDef.density = 3.0f;
+	fixtureDef.friction = 0.5f;
+	plunger->CreateFixture(&fixtureDef);
+
+	PhysBody* body = new PhysBody();
+	body->body = plunger;
+	body->width = 20;
+	body->height = 40;
+	return body;
 }
 
 void ModulePhysics::StartContact(b2Contact* contact)
