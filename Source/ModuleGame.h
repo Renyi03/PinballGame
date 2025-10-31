@@ -27,13 +27,11 @@ public:
 
 public:
 	std::vector<PhysicEntity*> entities;
-	std::vector<Ball*> balls;
 	Texture2D ballTexture;
 
 	void CreateBall();
 	PhysBody* boardBody;
-	PhysBody* ball;
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
-	Ball* balls;
+	Ball* ball;
 };

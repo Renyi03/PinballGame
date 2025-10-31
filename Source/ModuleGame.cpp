@@ -35,7 +35,7 @@ public:
 		return 0;
 	}
 
-	b2Vec2 PhysicEntity::GetPosition() const
+	b2Vec2 PhysicEntity::GetPhysicEntityPosition() const
 	{
 		int x, y;
 	
@@ -691,8 +691,8 @@ bool ModuleGame::Start()
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
-	balls = new Ball(App->physics, 480, 200, this, ballTexture);
-	entities.emplace_back(balls);
+	ball = new Ball(App->physics, 480, 200, this, ballTexture);
+	entities.emplace_back(ball);
 
 
 	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
@@ -714,11 +714,19 @@ bool ModuleGame::CleanUp()
 update_status ModuleGame::Update()
 {
 	for (auto& entity : entities) {
+		// Check if this entity is a Ball that needs replacement
+		Ball* ball = dynamic_cast<Ball*>(entity);
+		if (ball != nullptr && ball->GetPosition().y >= 900.0f) {
+			delete ball;
+			entity = new Ball(App->physics, 480, 200, this, ballTexture);
+		}
+
+		// Update AFTER potential replacement
 		entity->Update();
 	}
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		balls.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
+		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
 	if (IsKeyDown(KEY_LEFT)) {
 		leftJoint->SetMotorSpeed(-15.0f);
@@ -733,18 +741,5 @@ update_status ModuleGame::Update()
 		rightJoint->SetMotorSpeed(-15.0f);
 	}
 
-
-	if (balls->GetPosition().y >= 900.0f) {
-		delete balls;
-		balls = new Ball(App->physics, 480, 200, this, ballTexture);
-		entities.emplace_back(balls);
-	}
-
 	return UPDATE_CONTINUE;
-
-	for (PhysicEntity* ball :  balls) {
-		if (ball->GetPosition().y >= SCREEN_HEIGHT) {
-
-		}
-	}
 }
