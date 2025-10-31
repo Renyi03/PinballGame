@@ -25,7 +25,7 @@ public:
 	{
 	}
 
-	void GetPosition(int& x, int& y) const;
+	b2Vec2 GetPosition(int& x, int& y) const;
 	void GetPhysicPosition(int& x, int& y) const;
 	float GetRotation() const;
 	bool Contains(int x, int y) const;

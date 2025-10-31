@@ -10,6 +10,7 @@
 
 class PhysBody;
 class PhysicEntity;
+class Ball;
 
 
 class ModuleGame : public Module
@@ -24,6 +25,7 @@ public:
 
 public:
 	std::vector<PhysicEntity*> entities;
+	std::vector<Ball*> balls;
 	Texture2D ballTexture;
 	void CreateBall();
 	PhysBody* boardBody;

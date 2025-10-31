@@ -341,11 +341,12 @@ void ModulePhysics::StartContact(b2Contact* contact)
 		physB->listener->OnCollision(physB, physA);
 }
 
-void PhysBody::GetPosition(int& x, int& y) const
+b2Vec2 PhysBody::GetPosition(int& x, int& y) const
 {
 	b2Vec2 pos = body->GetPosition();
 	x = METERS_TO_PIXELS(pos.x) - (width);
 	y = METERS_TO_PIXELS(pos.y) - (height);
+	return pos;
 }
 
 void PhysBody::GetPhysicPosition(int& x, int& y) const

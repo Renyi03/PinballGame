@@ -8,6 +8,7 @@
 class PhysicEntity
 {
 protected:
+	PhysBody* body;
 
 	PhysicEntity(PhysBody* _body, Module* _listener)
 		: body(_body)
@@ -25,8 +26,17 @@ public:
 		return 0;
 	}
 
+	b2Vec2 PhysicEntity::GetPosition() const
+	{
+		int x, y;
+	
+		b2Vec2 pos = body->GetPosition(x, y);
+		x = METERS_TO_PIXELS(pos.x) - (body->width);
+		y = METERS_TO_PIXELS(pos.y) - (body->height);
+		return pos;
+	}
+
 protected:
-	PhysBody* body;
 	Module* listener;
 };
 
@@ -520,8 +530,23 @@ public:
 		float rotation = body->GetRotation() * RAD2DEG;
 		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
 	}
+
+	float GetPositionX(PhysicEntity* body) const
+	{
+		float x = METERS_TO_PIXELS(body->GetPosition().x) - (texture.width);
+
+		return x;
+	}
+
+	float GetPositionY(PhysicEntity* body) const
+	{
+		float y = METERS_TO_PIXELS(body->GetPosition().y) - (texture.height);
+		return y;
+	}
+
 private:
 	Texture2D texture;
+	
 
 };
 
@@ -578,7 +603,13 @@ void ModuleGame::CreateBall()
 update_status ModuleGame::Update()
 {
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
+		balls.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
 	return UPDATE_CONTINUE;
+
+	for (PhysicEntity* ball :  balls) {
+		if (ball->GetPosition().y >= SCREEN_HEIGHT) {
+
+		}
+	}
 }
