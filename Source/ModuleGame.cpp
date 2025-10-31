@@ -9,11 +9,16 @@ class PhysicEntity
 {
 protected:
 
-	PhysicEntity(PhysBody* _body, Module* _listener)
-		: body(_body)
-		, listener(_listener)
+	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0)
+		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue)
 	{
+		if (_body == nullptr) {
+			TraceLog(LOG_ERROR, "ERROR: PhysBody is NULL! Cannot create entity.");
+			return;
+		}
 
+		body->listener = _listener;
+		TraceLog(LOG_INFO, "PhysicEntity created - body=%p, listener=%p", _body, _listener);
 	}
 
 public:
@@ -28,9 +33,18 @@ public:
 	{
 		return body;
 	}
+	EntityType GetEntityType() {
+		return entityType;
+	}
+	int GetScoreValue() {
+		return scoreValue;
+	}
+
 protected:
 	PhysBody* body;
 	Module* listener;
+	EntityType entityType;
+	int scoreValue;
 };
 
 class Board : public PhysicEntity
@@ -460,7 +474,7 @@ class YellowBumper : public PhysicEntity
 {
 public:
 	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener)
+		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::ROUND_BUMPER, 300)
 	{
 	}
 	void Update() override
@@ -641,29 +655,51 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	ballTexture = LoadTexture("Assets/Turbo.png");
 	bool ret = true;
+	TraceLog(LOG_INFO, "=== Starting entity creation ===");
+	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board - entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardRightWall(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Right wall - entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardTube(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Tube- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardLeftWall(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Left Wall- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardNearFlippersR(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Near Flippers R- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardNearFlippersL(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Near Flippers L- entities.size(): %d", entities.size());
 	boardTriangleR = new BoardTriangleR(App->physics, 0, 0, this);
 	entities.emplace_back(boardTriangleR);
+	TraceLog(LOG_INFO, "Created Board Triangle R- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardTriangleL(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Triangle L- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardRhombus(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Rhombus- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardOvalR(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Oval R- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardOvalL(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Oval L- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardLeftPassage(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Left Passage- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardSmallOvalR(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Small Oval R- entities.size(): %d", entities.size());
 	entities.emplace_back(new BoardSmallOvalL(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Small Oval L- entities.size(): %d", entities.size());
 	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Yellow Bumper- entities.size(): %d", entities.size());
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Red Bumper- entities.size(): %d", entities.size());
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
 	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
 	entities.emplace_back(springLauncherEntity);
+	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
 	ball = new Ball(App->physics, 480, 200, this, ballTexture);
 	entities.emplace_back(ball);
-
+	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
+	TraceLog(LOG_INFO, "=== Finished entity creation ===");
+	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
 	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
 	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+70, SCREEN_HEIGHT-140, rightJoint);
 
@@ -681,12 +717,21 @@ bool ModuleGame::CleanUp()
 
 void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	LOG("Collision!");
+	for (int i = 0; i < entities.size(); ++i) {
+		PhysBody* entityBody = entities[i]->GetBody();
+		if (bodyA == entityBody || bodyB == entityBody) {
+			int score = entities[i]->GetScoreValue();
+			if (score > 0) {
+				AddScore(score);
+			}
+		}
+	}
 }
 
 void ModuleGame::AddScore(int points)
 {
 	currentScore += points;
+	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }
 
 // Update: draw background

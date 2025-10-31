@@ -451,6 +451,9 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 	PhysBody* physA = (PhysBody*)dataA.pointer;
 	PhysBody* physB = (PhysBody*)dataB.pointer;
 
+	TraceLog(LOG_INFO, "physA: %p, physA->listener: %p", physA, physA ? physA->listener : nullptr);
+	TraceLog(LOG_INFO, "physB: %p, physB->listener: %p", physB, physB ? physB->listener : nullptr);
+
 	if (physA && physA->listener != NULL)
 		physA->listener->OnCollision(physA, physB);
 

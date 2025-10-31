@@ -16,6 +16,13 @@ class Ball;
 class BoardTriangleR;
 class SpringLauncherEntity;
 
+enum class EntityType {
+	DEFAULT,
+	BALL,
+	ROUND_BUMPER,
+	TRIANGLE_BUMPER,
+};
+
 class ModuleGame : public Module
 {
 public:
