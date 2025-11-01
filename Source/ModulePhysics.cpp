@@ -518,3 +518,11 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
 
 	return ret;
 }
+
+void ModulePhysics::DestroyBody(PhysBody* pbody)
+{
+	if (pbody != nullptr && pbody->body != nullptr) {
+		world->DestroyBody(pbody->body);  // Destroy the Box2D body
+		delete pbody;  // Delete the PhysBody wrapper
+	}
+}

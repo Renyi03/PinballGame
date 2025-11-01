@@ -28,7 +28,6 @@ public:
 public:
 	std::vector<PhysicEntity*> entities;
 	Texture2D ballTexture;
-
 	void CreateBall();
 	PhysBody* boardBody;
 	b2RevoluteJoint* leftJoint;

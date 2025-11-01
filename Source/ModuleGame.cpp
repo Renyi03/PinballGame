@@ -7,19 +7,19 @@
 
 class PhysicEntity
 {
-protected:
-	PhysBody* body;
+public:
 
+	PhysBody* body;
+	virtual ~PhysicEntity()
+	{
+
+	}
+	virtual void Update() = 0;
 	PhysicEntity(PhysBody* _body, Module* _listener)
 		: body(_body)
 		, listener(_listener)
 	{
-
 	}
-
-public:
-	virtual ~PhysicEntity() = default;
-	virtual void Update() = 0;
 	Vector2 PhysicEntity::GetPosition() const
 	{
 		int x, y;
@@ -598,7 +598,12 @@ public:
 	{
 
 	}
-
+	~Ball() override
+	{
+		if (body != nullptr) {
+			App->physics->DestroyBody(body);
+		}
+	}
 	void Update() override
 	{
 		int x, y;
@@ -714,10 +719,9 @@ bool ModuleGame::CleanUp()
 update_status ModuleGame::Update()
 {
 	for (auto& entity : entities) {
-		// Check if this entity is a Ball that needs replacement
 		Ball* ball = dynamic_cast<Ball*>(entity);
 		if (ball != nullptr && ball->GetPosition().y >= 900.0f) {
-			delete ball;
+			delete ball;  // This will automatically destroy the physics body via destructor
 			entity = new Ball(App->physics, 480, 200, this, ballTexture);
 		}
 

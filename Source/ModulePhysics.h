@@ -67,6 +67,8 @@ public:
 	// b2ContactListener ---
 	void StartContact(b2Contact* contact);
 
+	void DestroyBody(PhysBody* pbody);
+
 private:
 
 	b2World* world = nullptr;
