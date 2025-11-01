@@ -55,7 +55,7 @@ public:
 	int currentScore;
 	int previousScore;
 	int highestScore;
-	int totalBalls = 2;     // Max balls per round
+	int totalBalls = 3;     // Max balls per round
 	int currentBall = 1;    // How many have been used
 	bool roundOver = false; // To prevent respawning after the last ball
 };
