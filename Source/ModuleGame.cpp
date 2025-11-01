@@ -772,28 +772,64 @@ void ModuleGame::AddScore(int points)
 update_status ModuleGame::Update()
 {
 
-	for (auto& entity : entities) {
-		Ball* ball = dynamic_cast<Ball*>(entity);
-		if (ball != nullptr) {
-			Vector2 pos = ball->GetPosition();
-			if (pos.y >= 900.0f) {
-				delete ball;  // This will automatically destroy the physics body via destructor
-				ball = nullptr;
-				entity = nullptr;
-				if (currentBall < totalBalls) {
-					entity = new Ball(App->physics, 480, 200, this, ballTexture);
-					currentBall++;
+	if (!roundOver) {
+		for (auto& entity : entities) {
+			Ball* ball = dynamic_cast<Ball*>(entity);
+			if (ball != nullptr) {
+				Vector2 pos = ball->GetPosition();
+				if (pos.y >= 900.0f) {
+					delete ball;  // This will automatically destroy the physics body via destructor
+					ball = nullptr;
+					entity = nullptr;
+					if (currentBall < totalBalls) {
+						entity = new Ball(App->physics, 480, 200, this, ballTexture);
+						currentBall++;
+					}
+					else {
+						roundOver = true;
+						entity = new Ball(App->physics, 480, 200, this, ballTexture);
+						break;
+					}
+
 				}
-				else {
-					roundOver = true;
-					DrawText("ROUND OVER!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 40, RED);
-					return UPDATE_CONTINUE;
-				}
-				
 			}
+			if (entity != nullptr)
+				entity->Update();
 		}
-		if (entity != nullptr)
-			entity->Update();
+	}
+
+	if (roundOver) {
+		// Dark overlay
+		DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.6f));
+
+		// Main text
+		DrawText("GAME OVER", SCREEN_WIDTH / 2 - 160, SCREEN_HEIGHT / 2 - 120, 50, RED);
+		
+		DrawText(TextFormat("YOUR SCORE: %d", currentScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 - 40, 30, WHITE);
+		DrawText(TextFormat("HIGH SCORE: %d", highestScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2, 30, YELLOW);
+
+		// Options
+		DrawText("Press [R] to Restart", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 60, 25, LIGHTGRAY);
+		DrawText("Press [ESC] to Quit", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 100, 25, LIGHTGRAY);
+
+		if (IsKeyPressed(KEY_R)) {
+			// Reset round
+			currentScore = 0;
+			currentBall = 1;
+			roundOver = false;
+
+			// Clear old balls and recreate one
+			for (auto& e : entities) delete e;
+			entities.clear();
+
+			// Restart everything
+			Start();
+		}
+		if (IsKeyPressed(KEY_ESCAPE)) {
+			return UPDATE_STOP; // Ends the game
+		}
+
+		return UPDATE_CONTINUE;
 	}
 
 	DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
