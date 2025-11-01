@@ -7,19 +7,8 @@
 
 class PhysicEntity
 {
-public:
+protected:
 
-	PhysBody* body;
-	virtual ~PhysicEntity()
-	{
-
-	}
-	virtual void Update() = 0;
-	PhysicEntity(PhysBody* _body, Module* _listener)
-		: body(_body)
-		, listener(_listener)
-	{
-	}
 	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0)
 		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue)
 	{
@@ -28,17 +17,11 @@ public:
 			TraceLog(LOG_INFO, "PhysicEntity created: body=%p, listener=%p", _body, _listener);
 		}
 		TraceLog(LOG_INFO, "PhysicEntity created: body=%p, listener=%p", _body, _listener);
+	}
 
-	}
-	Vector2 PhysicEntity::GetPosition() const
-	{
-		int x, y;
-		body->GetPosition(x,y);
-		Vector2 result;
-		result.x = x;
-		result.y = y;
-		return result;
-	}
+public:
+	virtual ~PhysicEntity() = default;
+	virtual void Update() = 0;
 
 	virtual int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal)
 	{
@@ -48,24 +31,33 @@ public:
 	{
 		return body;
 	}
+	Vector2 PhysicEntity::GetPosition() const
+	{
+		int x, y;
+		body->GetPosition(x, y);
+		Vector2 result;
+		result.x = x;
+		result.y = y;
+		return result;
+	}
 	EntityType GetEntityType() {
 		return entityType;
 	}
 	int GetScoreValue() {
 		return scoreValue;
 	}
-
 	b2Vec2 PhysicEntity::GetPhysicEntityPosition() const
 	{
 		int x, y;
-	
+
 		b2Vec2 pos = body->GetPosition(x, y);
 		x = METERS_TO_PIXELS(pos.x) - (body->width);
 		y = METERS_TO_PIXELS(pos.y) - (body->height);
 		return pos;
 	}
 
-	protected:
+protected:
+	PhysBody* body;
 	Module* listener;
 	EntityType entityType;
 	int scoreValue;
@@ -73,7 +65,7 @@ public:
 
 class Board : public PhysicEntity
 {
-	public:
+public:
 	static constexpr int boardVertices[52] = {
 		291, 939,
 		542, 939,
@@ -110,7 +102,7 @@ class Board : public PhysicEntity
 	{
 
 	}
-	private:
+private:
 	Texture2D texture;
 };
 
@@ -587,6 +579,10 @@ public:
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
 			}
+			else
+			{
+				springLauncherJoint->SetMotorSpeed(0.0f);
+			}
 		}
 
 	}
@@ -636,7 +632,7 @@ public:
 		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
 		, texture(_texture)
 	{
-		
+
 	}
 	~Ball() override
 	{
@@ -663,56 +659,13 @@ private:
 	ModulePhysics* physics;
 };
 
-
-class Spring : public PhysicEntity
-{
-public:
-	Spring(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
-		, texture(_texture)
-	{
-
-	}
-
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		Vector2 position{ (float)x, (float)y };
-		float scale = 1.0f;
-		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
-		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
-		float rotation = body->GetRotation() * RAD2DEG;
-		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
-	}
-
-	float GetPositionX(PhysicEntity* body) const
-	{
-		float x = METERS_TO_PIXELS(body->GetPosition().x) - (texture.width);
-
-		return x;
-	}
-
-	float GetPositionY(PhysicEntity* body) const
-	{
-		float y = METERS_TO_PIXELS(body->GetPosition().y) - (texture.height);
-		return y;
-	}
-
-private:
-	Texture2D texture;
-	
-
-};
-
-
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
 
 ModuleGame::~ModuleGame()
-{}
+{
+}
 
 // Load assets
 bool ModuleGame::Start()
@@ -772,6 +725,7 @@ bool ModuleGame::Start()
 	TraceLog(LOG_INFO, "Created Board Red Bumper- entities.size(): %d", entities.size());
 
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
+	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
 
 	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
 	entities.emplace_back(ball);
@@ -781,8 +735,6 @@ bool ModuleGame::Start()
 		entities.emplace_back(ball);
 		currentBall++;
 	}
-
-	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
 
 	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
 	entities.emplace_back(springLauncherEntity);
@@ -846,7 +798,6 @@ update_status ModuleGame::Update()
 		return UPDATE_CONTINUE;
 	}
 
-
 	for (auto& entity : entities) {
 		Ball* ball = dynamic_cast<Ball*>(entity);
 		if (ball != nullptr) {
@@ -862,13 +813,12 @@ update_status ModuleGame::Update()
 					roundOver = true;
 				}
 			}
-		} 
+		}
 		if (entity != nullptr)
 			entity->Update();
 	}
-	
-	DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
+	DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
@@ -885,6 +835,5 @@ update_status ModuleGame::Update()
 	else {
 		rightJoint->SetMotorSpeed(-15.0f);
 	}
-
 	return UPDATE_CONTINUE;
 }
