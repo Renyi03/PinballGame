@@ -12,13 +12,11 @@ protected:
 	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0)
 		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue)
 	{
-		if (_body == nullptr) {
-			TraceLog(LOG_ERROR, "ERROR: PhysBody is NULL! Cannot create entity.");
-			return;
+		if (_body != nullptr) {
+			body->listener = _listener;
+			TraceLog(LOG_INFO, "PhysicEntity created: body=%p, listener=%p", _body, _listener);
 		}
-
-		body->listener = _listener;
-		TraceLog(LOG_INFO, "PhysicEntity created - body=%p, listener=%p", _body, _listener);
+		TraceLog(LOG_INFO, "PhysicEntity created: body=%p, listener=%p", _body, _listener);
 	}
 
 public:
@@ -261,7 +259,7 @@ public:
 	351, 721
 	};
 	BoardTriangleR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleRVertices, 20), _listener)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleRVertices, 20), _listener, EntityType::TRIANGLE_BUMPER, 30)
 	{
 	}
 	void Update() override
@@ -289,7 +287,7 @@ public:
 	149, 721
 	};
 	BoardTriangleL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleLVertices, 20), _listener)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleLVertices, 20), _listener, EntityType::TRIANGLE_BUMPER, 30)
 	{
 	}
 	void Update() override
@@ -474,7 +472,7 @@ class YellowBumper : public PhysicEntity
 {
 public:
 	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::ROUND_BUMPER, 300)
+		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::ROUND_BUMPER, 50)
 	{
 	}
 	void Update() override
@@ -490,7 +488,7 @@ class RedBumper : public PhysicEntity
 {
 public:
 	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener)
+		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener, EntityType::ROUND_BUMPER, 100)
 	{
 	}
 	void Update() override
@@ -506,7 +504,7 @@ class BlueBumper : public PhysicEntity
 {
 public:
 	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener)
+		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener, EntityType::ROUND_BUMPER, 25)
 	{
 	}
 	void Update() override
@@ -524,7 +522,6 @@ public:
 		// Get both the plunger and the base from physics
 		b2Body* baseBody = nullptr;
 		PhysBody* plungerBody = physics->CreateSpringLauncher(x, y, baseBody);
-
 		// Store bodies
 		springPlungerBody = plungerBody->body;
 		springLauncherJoint = nullptr;
@@ -532,23 +529,16 @@ public:
 		b2PrismaticJointDef jointDef;
 		b2Vec2 axis(0.0f, -1.0f); // vertical movement
 		jointDef.Initialize(baseBody, springPlungerBody, baseBody->GetWorldCenter(), axis);
-
 		jointDef.enableLimit = true;
 		jointDef.lowerTranslation = -PIXEL_TO_METERS(80);
 		jointDef.upperTranslation = PIXEL_TO_METERS(0);
-
 		jointDef.enableMotor = true;
 		jointDef.maxMotorForce = 1500.0f;
 		jointDef.motorSpeed = 0.0f;
-
 		b2PrismaticJoint* joint = (b2PrismaticJoint*)physics->GetWorld()->CreateJoint(&jointDef);
-
 		springLauncherJoint = joint;
-
 		body = plungerBody;
-
 	}
-
 	void Update() override
 	{
 		//we can more this code if needed. but this code is to detect how long player is holding down key to influence spring power
@@ -557,7 +547,6 @@ public:
 		{
 			static float holdTime = 0.0f;
 			static bool charging = false;
-
 			if (IsKeyDown(KEY_DOWN))
 			{
 				charging = true;
@@ -577,15 +566,46 @@ public:
 				springLauncherJoint->SetMotorSpeed(0.0f);
 			}
 		}
-		
-	}
 
+	}
 private:
 	Texture2D texture;
 	b2PrismaticJoint* springLauncherJoint = nullptr;
 	b2Body* springPlungerBody = nullptr;
 };
+class LeftFlipper : public PhysicEntity
+{
+public:
+	LeftFlipper(ModulePhysics* physics, int x, int y, Module* listener, b2RevoluteJoint*& joint)
+		: PhysicEntity(physics->CreateLeftFlipper(x, y, joint), listener, EntityType::FLIPPER, 0)
+	{
+		this->joint = joint;
+	}
 
+	void Update() override
+	{
+	}
+
+private:
+	b2RevoluteJoint* joint;
+};
+
+class RightFlipper : public PhysicEntity
+{
+public:
+	RightFlipper(ModulePhysics* physics, int x, int y, Module* listener, b2RevoluteJoint*& joint)
+		: PhysicEntity(physics->CreateRightFlipper(x, y, joint), listener, EntityType::FLIPPER, 0)
+	{
+		this->joint = joint;
+	}
+
+	void Update() override
+	{
+	}
+
+private:
+	b2RevoluteJoint* joint;
+};
 
 class Ball : public PhysicEntity
 {
@@ -614,36 +634,8 @@ private:
 
 };
 
-class Spring : public PhysicEntity
-{
-public:
-	Spring(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
-		, texture(_texture)
-	{
-
-	}
-
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		Vector2 position{ (float)x, (float)y };
-		float scale = 1.0f;
-		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
-		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
-		float rotation = body->GetRotation() * RAD2DEG;
-		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
-	}
-private:
-	Texture2D texture;
-
-};
-
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	
 }
 
 ModuleGame::~ModuleGame()
@@ -659,50 +651,74 @@ bool ModuleGame::Start()
 	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board - entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardRightWall(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Right wall - entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardTube(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Tube- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardLeftWall(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Left Wall- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardNearFlippersR(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Near Flippers R- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardNearFlippersL(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Near Flippers L- entities.size(): %d", entities.size());
+
 	boardTriangleR = new BoardTriangleR(App->physics, 0, 0, this);
 	entities.emplace_back(boardTriangleR);
 	TraceLog(LOG_INFO, "Created Board Triangle R- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardTriangleL(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Triangle L- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardRhombus(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Rhombus- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardOvalR(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Oval R- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardOvalL(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Oval L- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardLeftPassage(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Left Passage- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardSmallOvalR(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Small Oval R- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BoardSmallOvalL(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Small Oval L- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Yellow Bumper- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Red Bumper- entities.size(): %d", entities.size());
+
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
+
 	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
 	entities.emplace_back(springLauncherEntity);
 	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
+
 	ball = new Ball(App->physics, 480, 200, this, ballTexture);
 	entities.emplace_back(ball);
 	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
+
+	leftFlipperEntity = new LeftFlipper(App->physics, SCREEN_WIDTH / 2 - 110, SCREEN_HEIGHT - 140, this, leftJoint);
+	entities.emplace_back(leftFlipperEntity);
+	TraceLog(LOG_INFO, "Created Left Flipper - entities.size(): %d", entities.size());
+
+	rightFlipperEntity = new RightFlipper(App->physics, SCREEN_WIDTH / 2 + 70, SCREEN_HEIGHT - 140, this, rightJoint);
+	entities.emplace_back(rightFlipperEntity);
+	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
+
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
-	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
-	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+70, SCREEN_HEIGHT-140, rightJoint);
-
 
 	return ret;
 }
@@ -717,11 +733,16 @@ bool ModuleGame::CleanUp()
 
 void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
+	// Iterates through the entity vector
 	for (int i = 0; i < entities.size(); ++i) {
+		// Assigns the current entity being checked to entityBody
 		PhysBody* entityBody = entities[i]->GetBody();
+		// Checks if either of the PhysBodys correspond to the current entityBody
 		if (bodyA == entityBody || bodyB == entityBody) {
+			// Gets the score value of the current entity
 			int score = entities[i]->GetScoreValue();
 			if (score > 0) {
+				// Adds the score
 				AddScore(score);
 			}
 		}
