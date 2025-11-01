@@ -471,13 +471,17 @@ private:
 class YellowBumper : public PhysicEntity
 {
 public:
-	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
+	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::ROUND_BUMPER, 50)
+		, texture(_texture)
 	{
 	}
 	void Update() override
 	{
-
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		DrawTexture(texture, x - 38, y - 38, WHITE);
 	}
 private:
 	Texture2D texture;
@@ -487,13 +491,17 @@ private:
 class RedBumper : public PhysicEntity
 {
 public:
-	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
+	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener, EntityType::ROUND_BUMPER, 100)
+		, texture(_texture)
 	{
 	}
 	void Update() override
 	{
-
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		DrawTexture(texture, x - 38, y - 38, WHITE);
 	}
 private:
 	Texture2D texture;
@@ -503,14 +511,21 @@ private:
 class BlueBumper : public PhysicEntity
 {
 public:
-	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
+	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener, EntityType::ROUND_BUMPER, 25)
+		, texture(_texture)
 	{
 	}
 	void Update() override
 	{
-
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		DrawTexture(texture, x - 38, y - 38, WHITE);
 	}
+private:
+	Texture2D texture;
+
 };
 
 class SpringLauncherEntity : public PhysicEntity
@@ -647,6 +662,9 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	ballTexture = LoadTexture("Assets/Turbo.png");
+	yellowBumperTexture = LoadTexture("Assets/YellowBumper.png");
+	redBumperTexture = LoadTexture("Assets/RedBumper.png");
+	blueBumperTexture = LoadTexture("Assets/BlueBumper.png");
 	bool ret = true;
 	changeGravity = false;
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");
@@ -694,13 +712,13 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BoardSmallOvalL(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Small Oval L- entities.size(): %d", entities.size());
 
-	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this));
+	entities.emplace_back(new YellowBumper(App->physics, 0, 0, this, yellowBumperTexture));
 	TraceLog(LOG_INFO, "Created Board Yellow Bumper- entities.size(): %d", entities.size());
 
-	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
+	entities.emplace_back(new RedBumper(App->physics, 0, 0, this, redBumperTexture));
 	TraceLog(LOG_INFO, "Created Board Red Bumper- entities.size(): %d", entities.size());
 
-	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
+	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this, blueBumperTexture));
 	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
 
 	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
@@ -802,7 +820,7 @@ update_status ModuleGame::Update()
 		bounceMode = !bounceMode;
 
 		if (bounceMode) {
-			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.7f);
+			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.4f);
 			TraceLog(LOG_INFO, "Bounce mode activated");
 		}
 		else {

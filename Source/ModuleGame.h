@@ -42,6 +42,9 @@ public:
 public:
 	std::vector<PhysicEntity*> entities;
 	Texture2D ballTexture;
+	Texture2D yellowBumperTexture;
+	Texture2D redBumperTexture;
+	Texture2D blueBumperTexture;
 	bool changeGravity;
 	bool bounceMode;
 	void CreateBall();
