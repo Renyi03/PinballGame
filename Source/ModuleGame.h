@@ -15,12 +15,16 @@ class PhysicEntity;
 class Ball;
 class BoardTriangleR;
 class SpringLauncherEntity;
+class LeftFlipper;
+class RightFlipper;
 
 enum class EntityType {
 	DEFAULT,
 	BALL,
 	ROUND_BUMPER,
 	TRIANGLE_BUMPER,
+	FLIPPER,
+	SPRING
 };
 
 class ModuleGame : public Module
@@ -46,6 +50,8 @@ public:
 	Ball* ball;
 	BoardTriangleR* boardTriangleR;
 	SpringLauncherEntity* springLauncherEntity;
+	LeftFlipper* leftFlipperEntity;
+	RightFlipper* rightFlipperEntity;
 	int currentScore;
 	int previousScore;
 	int highestScore;
