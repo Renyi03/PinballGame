@@ -39,7 +39,7 @@ public:
 };
 
 // Module --------------------------------------
-class ModulePhysics : public Module, public b2ContactListener // TODO
+class ModulePhysics : public Module, public b2ContactListener
 {
 public:
 	ModulePhysics(Application* app, bool start_enabled = true);
@@ -65,7 +65,7 @@ public:
 
 
 	// b2ContactListener ---
-	void StartContact(b2Contact* contact);
+	void BeginContact(b2Contact* contact) override;
 
 	void DestroyBody(PhysBody* pbody);
 

@@ -14,6 +14,20 @@ class PhysBody;
 class PhysicEntity;
 class Ball;
 
+class BoardTriangleR;
+class SpringLauncherEntity;
+class LeftFlipper;
+class RightFlipper;
+
+
+enum class EntityType {
+	DEFAULT,
+	BALL,
+	ROUND_BUMPER,
+	TRIANGLE_BUMPER,
+	FLIPPER,
+	SPRING
+};
 
 class ModuleGame : public Module
 {
@@ -24,11 +38,14 @@ public:
 	bool Start();
 	update_status Update();
 	bool CleanUp();
+	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
+	void AddScore(int points);
 
 public:
 	std::vector<PhysicEntity*> entities;
 	Texture2D ballTexture;
 	void CreateBall();
+
 	PhysBody* boardBody;
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
@@ -36,4 +53,16 @@ public:
 	int totalBalls = 4;     // Max balls per round
 	int currentBall = 0;    // How many have been used
 	bool roundOver = false; // To prevent respawning after the last ball
+
+	b2RevoluteJoint* leftJoint;
+	b2RevoluteJoint* rightJoint;
+	Ball* ball;
+	BoardTriangleR* boardTriangleR;
+	SpringLauncherEntity* springLauncherEntity;
+	LeftFlipper* leftFlipperEntity;
+	RightFlipper* rightFlipperEntity;
+	int currentScore;
+	int previousScore;
+	int highestScore;
+
 };

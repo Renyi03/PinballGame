@@ -1,3 +1,5 @@
+#include <iostream>
+#include <sstream>
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleWindow.h"
