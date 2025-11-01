@@ -22,11 +22,11 @@ class Miku;
 enum class EntityType {
 	DEFAULT,
 	BALL,
-	ROUND_BUMPER,
-	TRIANGLE_BUMPER,
+	BUMPER,
 	FLIPPER,
 	SPRING,
-	MULTIPLIER
+	MULTIPLIER,
+	WALL
 };
 
 class ModuleGame : public Module
@@ -65,4 +65,11 @@ public:
 	int highestScore;
 	bool isMultiplied = false;
 	int mikuCtr = 0;
+	Music bgm;
+	Sound bumperHit;
+	Sound flipperHit;
+	Sound flipperNoHit;
+	Sound miku;
+	Sound spring;
+	Sound wallHit;
 };

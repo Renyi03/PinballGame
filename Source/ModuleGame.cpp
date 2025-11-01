@@ -83,7 +83,7 @@ public:
 		209, 939
 	};
 	Board(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardVertices, 52), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardVertices, 52), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -125,7 +125,7 @@ public:
 	503, 939
 	};
 	BoardRightWall(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardRightWallVertices, 50), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardRightWallVertices, 50), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -189,7 +189,7 @@ public:
 	7, 939
 	};
 	BoardLeftWall(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardLeftWallVertices, 28), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardLeftWallVertices, 28), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -213,7 +213,7 @@ public:
 		359, 801
 	};
 	BoardNearFlippersR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -237,7 +237,7 @@ public:
 	141, 801
 	};
 	BoardNearFlippersL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -265,7 +265,7 @@ public:
 	351, 721
 	};
 	BoardTriangleR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleRVertices, 20), _listener, EntityType::TRIANGLE_BUMPER, 30)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleRVertices, 20), _listener, EntityType::BUMPER, 30)
 	{
 	}
 	void Update() override
@@ -293,7 +293,7 @@ public:
 	149, 721
 	};
 	BoardTriangleL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleLVertices, 20), _listener, EntityType::TRIANGLE_BUMPER, 30)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleLVertices, 20), _listener, EntityType::BUMPER, 30)
 	{
 	}
 	void Update() override
@@ -321,7 +321,7 @@ public:
 	259, 555
 	};
 	BoardRhombus(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardRhombusVertices, 20), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardRhombusVertices, 20), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -345,7 +345,7 @@ public:
 	358, 466
 	};
 	BoardOvalR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardOvalRVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardOvalRVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -369,7 +369,7 @@ public:
 	191, 465
 	};
 	BoardOvalL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardOvalLVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardOvalLVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -414,7 +414,7 @@ public:
 	133, 501
 	};
 	BoardLeftPassage(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardLeftPassageVertices, 54), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardLeftPassageVertices, 54), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -438,7 +438,7 @@ public:
 	302, 170
 	};
 	BoardSmallOvalR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalRVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalRVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -462,7 +462,7 @@ public:
 	244, 170
 	};
 	BoardSmallOvalL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalLVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalLVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -478,7 +478,7 @@ class YellowBumper : public PhysicEntity
 {
 public:
 	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::ROUND_BUMPER, 50)
+		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::BUMPER, 50)
 	{
 	}
 	void Update() override
@@ -494,7 +494,7 @@ class RedBumper : public PhysicEntity
 {
 public:
 	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener, EntityType::ROUND_BUMPER, 100)
+		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener, EntityType::BUMPER, 100)
 	{
 	}
 	void Update() override
@@ -510,7 +510,7 @@ class BlueBumper : public PhysicEntity
 {
 public:
 	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener, EntityType::ROUND_BUMPER, 25)
+		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener, EntityType::BUMPER, 25)
 	{
 	}
 	void Update() override
@@ -687,8 +687,18 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	ballTexture = LoadTexture("Assets/Turbo.png");
+	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
+	flipperHit = LoadSound("Assets/Sounds/flipper_hit.wav");
+	flipperNoHit = LoadSound("Assets/Sounds/flipper_no_hit.wav");
+	miku = LoadSound("Assets/Sounds/miku.wav");
+	wallHit = LoadSound("Assets/Sounds/wall_hit.wav");
+	bgm = LoadMusicStream("Assets/Sounds/bgm.wav");
+	SetMusicVolume(bgm, 0.10f);
+	PlayMusicStream(bgm);
+
 	bool ret = true;
 	changeGravity = false;
+
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");
 	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
@@ -823,6 +833,12 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					MikuCombo();
 				}
 			}
+			if (entities[i]->GetEntityType() == EntityType::BUMPER) {
+				PlaySound(bumperHit);
+			}
+			else if (entities[i]->GetEntityType() == EntityType::FLIPPER && (IsKeyDown(KEY_RIGHT) == true || IsKeyDown(KEY_LEFT))) {
+				PlaySound(flipperHit);
+			}
 		}
 	}
 }
@@ -846,6 +862,7 @@ void ModuleGame::MultiplyScore(double multiplier)
 void ModuleGame::MikuCombo()
 {
 	TraceLog(LOG_INFO, "MIKU COMBO!!!!");
+	PlaySound(miku);
 	// Miku combo multiplies the current score by 3
 	currentScore *= 3;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
@@ -862,6 +879,7 @@ void ModuleGame::MikuCombo()
 // Update: draw background
 update_status ModuleGame::Update()
 {
+	UpdateMusicStream(bgm);
 	for (auto& entity : entities) {
 		entity->Update();
 	}
