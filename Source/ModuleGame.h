@@ -33,4 +33,7 @@ public:
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
 	Ball* ball;
+	int totalBalls = 4;     // Max balls per round
+	int currentBall = 0;    // How many have been used
+	bool roundOver = false; // To prevent respawning after the last ball
 };

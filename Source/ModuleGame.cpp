@@ -574,10 +574,6 @@ public:
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
 			}
-			else
-			{
-				springLauncherJoint->SetMotorSpeed(0.0f);
-			}
 		}
 		
 	}
@@ -596,12 +592,13 @@ public:
 		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
 		, texture(_texture)
 	{
-
+		
 	}
 	~Ball() override
 	{
-		if (body != nullptr) {
-			App->physics->DestroyBody(body);
+		if (body != nullptr && physics != nullptr) {
+			physics->DestroyBody(body);
+			body = nullptr;
 		}
 	}
 	void Update() override
@@ -619,7 +616,7 @@ public:
 	}
 private:
 	Texture2D texture;
-
+	ModulePhysics* physics;
 };
 
 class Spring : public PhysicEntity
@@ -696,9 +693,13 @@ bool ModuleGame::Start()
 	entities.emplace_back(new RedBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
 	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
-	ball = new Ball(App->physics, 480, 200, this, ballTexture);
 	entities.emplace_back(ball);
 
+	if (currentBall < totalBalls) {
+		ball = new Ball(App->physics, 480, 200, this, ballTexture);
+		entities.emplace_back(ball);
+		currentBall++;
+	}
 
 	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
 	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+70, SCREEN_HEIGHT-140, rightJoint);
@@ -718,16 +719,31 @@ bool ModuleGame::CleanUp()
 // Update: draw background
 update_status ModuleGame::Update()
 {
+	if (roundOver) {
+		DrawText("ROUND OVER!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 40, RED);
+		return UPDATE_CONTINUE;
+	}
+
 	for (auto& entity : entities) {
 		Ball* ball = dynamic_cast<Ball*>(entity);
-		if (ball != nullptr && ball->GetPosition().y >= 900.0f) {
-			delete ball;  // This will automatically destroy the physics body via destructor
-			entity = new Ball(App->physics, 480, 200, this, ballTexture);
-		}
-
-		// Update AFTER potential replacement
-		entity->Update();
+		if (ball != nullptr) {
+			Vector2 pos = ball->GetPosition();
+			if (pos.y >= 900.0f) {
+				delete ball;  // This will automatically destroy the physics body via destructor
+				entity = nullptr;
+				if (currentBall < totalBalls) {
+					entity = new Ball(App->physics, 480, 200, this, ballTexture);
+					currentBall++;
+				}
+				else {
+					roundOver = true;
+				}
+			}
+		} 
+		if (entity != nullptr)
+			entity->Update();
 	}
+	
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
