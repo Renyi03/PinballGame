@@ -9,8 +9,8 @@ class PhysicEntity
 {
 protected:
 
-	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0, int _multiplierValue = 1)
-		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue), multiplierValue(_multiplierValue)
+	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0, int _multiplierValue = 1, bool _isMiku = false)
+		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue), multiplierValue(_multiplierValue), isMiku(_isMiku)
 	{
 		if (_body != nullptr) {
 			body->listener = _listener;
@@ -41,12 +41,14 @@ public:
 		return multiplierValue;
 	}
 
+	bool isMiku;
+
 protected:
 	PhysBody* body;
 	Module* listener;
 	EntityType entityType;
 	int scoreValue;
-	int multiplierValue;
+	double multiplierValue;
 };
 
 class Board : public PhysicEntity
@@ -655,6 +657,22 @@ public:
 
 private:
 	int multiplier;
+	Texture2D texture;
+};
+
+class Miku : public PhysicEntity
+{
+public:
+	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener)
+	: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 1, true)
+	{
+	}
+	void Update() override
+	{
+	}
+
+private:
+	Texture2D texture;
 };
 
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -741,8 +759,24 @@ bool ModuleGame::Start()
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
-	entities.emplace_back(new MultiplierZone(App->physics, 131, 171, 38, this, 2));
+	entities.emplace_back(new MultiplierZone(App->physics, 132, 171, 22, this, 2));
 	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
+
+	M = new Miku(App->physics, 116, 541, 22, this);
+	entities.emplace_back(M);
+	TraceLog(LOG_INFO, "Created M - entities.size(): %d", entities.size());
+
+	I = new Miku(App->physics, 280, 262, 22, this);
+	entities.emplace_back(I);
+	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
+
+	K = new Miku(App->physics, 317, 479, 22, this);
+	entities.emplace_back(K);
+	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
+
+	U = new Miku(App->physics, 470, 472, 22, this);
+	entities.emplace_back(U);
+	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
 
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
@@ -768,14 +802,23 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyA == entityBody || bodyB == entityBody) {
 			// Gets the score value of the current entity
 			int score = entities[i]->GetScoreValue();
-			int multiplier = entities[i]->GetMultiplierValue();
+			double multiplier = entities[i]->GetMultiplierValue();
+			bool miku = entities[i]->isMiku;
 			if (multiplier > 1) {
 				MultiplyScore(multiplier);
 			}
 			if (score > 0) {
 				// Adds the score
 				AddScore(score);
-			}			
+			}
+			if (miku == true) {
+				++mikuCtr;
+				entities[i]->isMiku = false;
+				TraceLog(LOG_INFO, "Miku counter: %d", mikuCtr);
+				if (mikuCtr == 4) {
+					MikuCombo();
+				}
+			}
 		}
 	}
 }
@@ -786,11 +829,18 @@ void ModuleGame::AddScore(int points)
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }
 
-void ModuleGame::MultiplyScore(int multiplier)
+void ModuleGame::MultiplyScore(double multiplier)
 {
 	scoreMultiplier = multiplier;
 	currentScore *= scoreMultiplier;
 	TraceLog(LOG_INFO, "Multiplying score");
+	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+}
+
+void ModuleGame::MikuCombo()
+{
+	TraceLog(LOG_INFO, "MIKU COMBO!!!!");
+	currentScore *= 3;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }
 

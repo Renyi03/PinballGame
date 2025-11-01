@@ -17,6 +17,7 @@ class BoardTriangleR;
 class SpringLauncherEntity;
 class LeftFlipper;
 class RightFlipper;
+class Miku;
 
 enum class EntityType {
 	DEFAULT,
@@ -39,7 +40,8 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void AddScore(int points);
-	void MultiplyScore(int multiplier);
+	void MultiplyScore(double multiplier);
+	void MikuCombo();
 
 public:
 	std::vector<PhysicEntity*> entities;
@@ -53,9 +55,14 @@ public:
 	SpringLauncherEntity* springLauncherEntity;
 	LeftFlipper* leftFlipperEntity;
 	RightFlipper* rightFlipperEntity;
+	Miku* M;
+	Miku* I;
+	Miku* K;
+	Miku* U;
 	int currentScore = 0;
 	int scoreMultiplier = 1;
 	int previousScore;
 	int highestScore;
 	bool isMultiplied = false;
+	int mikuCtr = 0;
 };
