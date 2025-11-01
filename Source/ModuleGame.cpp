@@ -811,10 +811,14 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				// Adds the score
 				AddScore(score);
 			}
+			// If the entity is a Miku sensor
 			if (miku == true) {
+				// Adds to the counter to know how many sensors have been activated
 				++mikuCtr;
+				// We put the boolean of the sensor in false so it can't be activated again
 				entities[i]->isMiku = false;
 				TraceLog(LOG_INFO, "Miku counter: %d", mikuCtr);
+				// If 4 Miku sensors are activated, Miku Combo is activated
 				if (mikuCtr == 4) {
 					MikuCombo();
 				}
@@ -825,12 +829,14 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 void ModuleGame::AddScore(int points)
 {
+	// Addes the score to the current score
 	currentScore += points;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }
 
 void ModuleGame::MultiplyScore(double multiplier)
 {
+	// Multiplies the score multiplier to the current score
 	scoreMultiplier = multiplier;
 	currentScore *= scoreMultiplier;
 	TraceLog(LOG_INFO, "Multiplying score");
@@ -840,8 +846,17 @@ void ModuleGame::MultiplyScore(double multiplier)
 void ModuleGame::MikuCombo()
 {
 	TraceLog(LOG_INFO, "MIKU COMBO!!!!");
+	// Miku combo multiplies the current score by 3
 	currentScore *= 3;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+	// Activates all sensors again
+	M->isMiku = true;
+	I->isMiku = true;
+	K->isMiku = true;
+	U->isMiku = true;
+	// Resets Miku Counter
+	mikuCtr = 0;
+	TraceLog(LOG_INFO, "Miku combo reset");
 }
 
 // Update: draw background
