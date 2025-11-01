@@ -655,6 +655,7 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	ballTexture = LoadTexture("Assets/Turbo.png");
 	bool ret = true;
+	changeGravity = false;
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");
 	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
@@ -758,5 +759,22 @@ update_status ModuleGame::Update()
 	else {
 		rightJoint->SetMotorSpeed(-15.0f);
 	}
+
+	if (IsKeyPressed(KEY_G)) {
+		b2Vec2 currentGravity = App->physics->world->GetGravity();
+		changeGravity = !changeGravity;
+
+		if (changeGravity) {
+			currentGravity.y = -3.0f;
+			App->physics->world->SetGravity(currentGravity);
+			TraceLog(LOG_INFO, "Current gravity Y = %d", currentGravity.y);
+		}
+		else {
+			currentGravity.y = -GRAVITY_Y;
+			App->physics->world->SetGravity(currentGravity);
+			TraceLog(LOG_INFO, "Current gravity Y = %d", currentGravity.y);
+		}
+	}
+
 	return UPDATE_CONTINUE;
 }

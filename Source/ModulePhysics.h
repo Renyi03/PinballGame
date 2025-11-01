@@ -66,9 +66,10 @@ public:
 
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact) override;
+	b2World* world = nullptr;
 
 private:
 
-	b2World* world = nullptr;
+
 	bool debug;
 };

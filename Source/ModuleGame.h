@@ -38,7 +38,7 @@ public:
 public:
 	std::vector<PhysicEntity*> entities;
 	Texture2D ballTexture;
-
+	bool changeGravity;
 	void CreateBall();
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
