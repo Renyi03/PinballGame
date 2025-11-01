@@ -807,7 +807,7 @@ update_status ModuleGame::Update()
 		}
 		else {
 			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
-			TraceLog(LOG_INFO, "Bounce mode activated");
+			TraceLog(LOG_INFO, "Bounce mode deactivated");
 		}
 	}
 	return UPDATE_CONTINUE;
