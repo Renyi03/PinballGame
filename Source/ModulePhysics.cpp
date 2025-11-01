@@ -171,7 +171,7 @@ PhysBody* ModulePhysics::CreateCircularBumper(int x, int y, int radius) {
 	b2FixtureDef fixture;
 	fixture.shape = &bumpershape;
 	fixture.density = 1.0f;
-	fixture.restitution = 1.3f;
+	fixture.restitution = 1.7f;
 
 	// Add fixture to the Bumper BODY
 	b->CreateFixture(&fixture);

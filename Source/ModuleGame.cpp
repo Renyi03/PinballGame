@@ -611,6 +611,7 @@ public:
 	}
 private:
 	Texture2D texture;
+	int restitution;
 
 };
 
@@ -776,5 +777,17 @@ update_status ModuleGame::Update()
 		}
 	}
 
+	if (IsKeyPressed(KEY_B)) {
+		bounceMode = !bounceMode;
+
+		if (bounceMode) {
+			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.7f);
+			TraceLog(LOG_INFO, "Bounce mode activated");
+		}
+		else {
+			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
+			TraceLog(LOG_INFO, "Bounce mode activated");
+		}
+	}
 	return UPDATE_CONTINUE;
 }
