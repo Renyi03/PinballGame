@@ -45,6 +45,7 @@ protected:
 	int scoreValue;
 };
 
+
 class Board : public PhysicEntity
 {
 public:
@@ -588,6 +589,7 @@ private:
 	b2PrismaticJoint* springLauncherJoint = nullptr;
 	b2Body* springPlungerBody = nullptr;
 };
+
 class LeftFlipper : public PhysicEntity
 {
 public:
@@ -661,12 +663,18 @@ ModuleGame::~ModuleGame()
 bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
+
 	ballTexture = LoadTexture("Assets/Turbo.png");
 	yellowBumperTexture = LoadTexture("Assets/YellowBumper.png");
 	redBumperTexture = LoadTexture("Assets/RedBumper.png");
+	bordersTexture = LoadTexture("Assets/Borders.png");
 	blueBumperTexture = LoadTexture("Assets/BlueBumper.png");
+	leftTriangleBumper = LoadTexture("Assets/leftTriangleBumper.png");
+	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
+
 	bool ret = true;
 	changeGravity = false;
+
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");
 	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
@@ -739,6 +747,7 @@ bool ModuleGame::Start()
 
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
+
 
 	return ret;
 }
@@ -828,5 +837,9 @@ update_status ModuleGame::Update()
 			TraceLog(LOG_INFO, "Bounce mode activated");
 		}
 	}
+
+	DrawTexture(bordersTexture, 0, 0, WHITE);
+	DrawTexture(leftTriangleBumper, 82, 604, WHITE);
+	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
 	return UPDATE_CONTINUE;
 }

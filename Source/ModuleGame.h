@@ -45,6 +45,9 @@ public:
 	Texture2D yellowBumperTexture;
 	Texture2D redBumperTexture;
 	Texture2D blueBumperTexture;
+	Texture2D bordersTexture;
+	Texture2D leftTriangleBumper;
+	Texture2D rightTriangleBumper;
 	bool changeGravity;
 	bool bounceMode;
 	void CreateBall();
