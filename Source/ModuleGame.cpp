@@ -609,6 +609,7 @@ public:
 	Ball(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
 		, texture(_texture)
+		, physics(physics)
 	{
 
 	}
@@ -817,13 +818,6 @@ update_status ModuleGame::Update()
 			currentScore = 0;
 			currentBall = 1;
 			roundOver = false;
-
-			// Clear old balls and recreate one
-			for (auto& e : entities) delete e;
-			entities.clear();
-
-			// Restart everything
-			Start();
 		}
 		if (IsKeyPressed(KEY_ESCAPE)) {
 			return UPDATE_STOP; // Ends the game
