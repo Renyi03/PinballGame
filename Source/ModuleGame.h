@@ -13,12 +13,10 @@
 class PhysBody;
 class PhysicEntity;
 class Ball;
-
 class BoardTriangleR;
 class SpringLauncherEntity;
 class LeftFlipper;
 class RightFlipper;
-
 
 enum class EntityType {
 	DEFAULT,
@@ -44,16 +42,9 @@ public:
 public:
 	std::vector<PhysicEntity*> entities;
 	Texture2D ballTexture;
+	bool changeGravity;
+	bool bounceMode;
 	void CreateBall();
-
-	PhysBody* boardBody;
-	b2RevoluteJoint* leftJoint;
-	b2RevoluteJoint* rightJoint;
-	Ball* ball;
-	int totalBalls = 4;     // Max balls per round
-	int currentBall = 0;    // How many have been used
-	bool roundOver = false; // To prevent respawning after the last ball
-
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
 	Ball* ball;
@@ -64,5 +55,7 @@ public:
 	int currentScore;
 	int previousScore;
 	int highestScore;
-
+	int totalBalls = 2;     // Max balls per round
+	int currentBall = 1;    // How many have been used
+	bool roundOver = false; // To prevent respawning after the last ball
 };

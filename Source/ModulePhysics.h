@@ -26,7 +26,7 @@ public:
 	{
 	}
 
-	b2Vec2 GetPosition(int& x, int& y) const;
+	void GetPosition(int& x, int& y) const;
 	void GetPhysicPosition(int& x, int& y) const;
 	float GetRotation() const;
 	bool Contains(int x, int y) const;
@@ -66,11 +66,10 @@ public:
 
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact) override;
-
+	b2World* world = nullptr;
 	void DestroyBody(PhysBody* pbody);
-
 private:
 
-	b2World* world = nullptr;
+
 	bool debug;
 };

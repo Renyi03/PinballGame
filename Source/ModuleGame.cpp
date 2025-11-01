@@ -31,29 +31,11 @@ public:
 	{
 		return body;
 	}
-	Vector2 PhysicEntity::GetPosition() const
-	{
-		int x, y;
-		body->GetPosition(x, y);
-		Vector2 result;
-		result.x = x;
-		result.y = y;
-		return result;
-	}
 	EntityType GetEntityType() {
 		return entityType;
 	}
 	int GetScoreValue() {
 		return scoreValue;
-	}
-	b2Vec2 PhysicEntity::GetPhysicEntityPosition() const
-	{
-		int x, y;
-
-		b2Vec2 pos = body->GetPosition(x, y);
-		x = METERS_TO_PIXELS(pos.x) - (body->width);
-		y = METERS_TO_PIXELS(pos.y) - (body->height);
-		return pos;
 	}
 
 protected:
@@ -113,7 +95,7 @@ public:
 	291, 939,
 	291, 921,
 	454, 838,
-	491, 838,
+	491, 832,
 	491, 556,
 	472, 532,
 	486, 514,
@@ -194,7 +176,7 @@ public:
 	47, 570,
 	30, 591,
 	7, 633,
-	7, 838,
+	7, 832,
 	46, 838,
 	209, 922,
 	208, 939,
@@ -222,7 +204,7 @@ public:
 		452, 713,
 		455, 747,
 		447, 756,
-		389, 801
+		359, 801
 	};
 	BoardNearFlippersR(ModulePhysics* physics, int _x, int _y, Module* _listener)
 		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener)
@@ -579,10 +561,6 @@ public:
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
 			}
-			else
-			{
-				springLauncherJoint->SetMotorSpeed(0.0f);
-			}
 		}
 
 	}
@@ -652,11 +630,19 @@ public:
 		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
 		float rotation = body->GetRotation() * RAD2DEG;
 		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
-
+	}
+	Vector2 GetPosition() const
+	{
+		int x = 0, y = 0;
+		if (body != nullptr)
+			body->GetPhysicPosition(x, y);
+		return { (float)x, (float)y };
 	}
 private:
 	Texture2D texture;
 	ModulePhysics* physics;
+	int restitution;
+
 };
 
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -673,6 +659,7 @@ bool ModuleGame::Start()
 	LOG("Loading Intro assets");
 	ballTexture = LoadTexture("Assets/Turbo.png");
 	bool ret = true;
+	changeGravity = false;
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");
 	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
@@ -727,15 +714,6 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this));
 	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
 
-	entities.emplace_back(new SpringLauncherEntity(App->physics, 520, 800, this));
-	entities.emplace_back(ball);
-
-	if (currentBall < totalBalls) {
-		ball = new Ball(App->physics, 480, 200, this, ballTexture);
-		entities.emplace_back(ball);
-		currentBall++;
-	}
-
 	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
 	entities.emplace_back(springLauncherEntity);
 	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
@@ -744,11 +722,11 @@ bool ModuleGame::Start()
 	entities.emplace_back(ball);
 	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
 
-	leftFlipperEntity = new LeftFlipper(App->physics, SCREEN_WIDTH / 2 - 110, SCREEN_HEIGHT - 140, this, leftJoint);
+	leftFlipperEntity = new LeftFlipper(App->physics, SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT - 140, this, leftJoint);
 	entities.emplace_back(leftFlipperEntity);
 	TraceLog(LOG_INFO, "Created Left Flipper - entities.size(): %d", entities.size());
 
-	rightFlipperEntity = new RightFlipper(App->physics, SCREEN_WIDTH / 2 + 70, SCREEN_HEIGHT - 140, this, rightJoint);
+	rightFlipperEntity = new RightFlipper(App->physics, SCREEN_WIDTH / 2 + 65, SCREEN_HEIGHT - 140, this, rightJoint);
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
@@ -793,10 +771,6 @@ void ModuleGame::AddScore(int points)
 // Update: draw background
 update_status ModuleGame::Update()
 {
-	if (roundOver) {
-		DrawText("ROUND OVER!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 40, RED);
-		return UPDATE_CONTINUE;
-	}
 
 	for (auto& entity : entities) {
 		Ball* ball = dynamic_cast<Ball*>(entity);
@@ -804,6 +778,7 @@ update_status ModuleGame::Update()
 			Vector2 pos = ball->GetPosition();
 			if (pos.y >= 900.0f) {
 				delete ball;  // This will automatically destroy the physics body via destructor
+				ball = nullptr;
 				entity = nullptr;
 				if (currentBall < totalBalls) {
 					entity = new Ball(App->physics, 480, 200, this, ballTexture);
@@ -811,7 +786,10 @@ update_status ModuleGame::Update()
 				}
 				else {
 					roundOver = true;
+					DrawText("ROUND OVER!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 40, RED);
+					return UPDATE_CONTINUE;
 				}
+				
 			}
 		}
 		if (entity != nullptr)
@@ -834,6 +812,35 @@ update_status ModuleGame::Update()
 	}
 	else {
 		rightJoint->SetMotorSpeed(-15.0f);
+	}
+
+	if (IsKeyPressed(KEY_G)) {
+		b2Vec2 currentGravity = App->physics->world->GetGravity();
+		changeGravity = !changeGravity;
+
+		if (changeGravity) {
+			currentGravity.y = -3.0f;
+			App->physics->world->SetGravity(currentGravity);
+			TraceLog(LOG_INFO, "Current gravity Y = %d", currentGravity.y);
+		}
+		else {
+			currentGravity.y = -GRAVITY_Y;
+			App->physics->world->SetGravity(currentGravity);
+			TraceLog(LOG_INFO, "Current gravity Y = %d", currentGravity.y);
+		}
+	}
+
+	if (IsKeyPressed(KEY_B)) {
+		bounceMode = !bounceMode;
+
+		if (bounceMode) {
+			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.7f);
+			TraceLog(LOG_INFO, "Bounce mode activated");
+		}
+		else {
+			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
+			TraceLog(LOG_INFO, "Bounce mode activated");
+		}
 	}
 	return UPDATE_CONTINUE;
 }
