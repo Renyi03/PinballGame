@@ -9,8 +9,8 @@ class PhysicEntity
 {
 protected:
 
-	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0)
-		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue)
+	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0, int _multiplierValue = 1)
+		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue), multiplierValue(_multiplierValue)
 	{
 		if (_body != nullptr) {
 			body->listener = _listener;
@@ -37,12 +37,16 @@ public:
 	int GetScoreValue() {
 		return scoreValue;
 	}
+	int GetMultiplierValue() {
+		return multiplierValue;
+	}
 
 protected:
 	PhysBody* body;
 	Module* listener;
 	EntityType entityType;
 	int scoreValue;
+	int multiplierValue;
 };
 
 class Board : public PhysicEntity
@@ -573,6 +577,7 @@ private:
 	b2PrismaticJoint* springLauncherJoint = nullptr;
 	b2Body* springPlungerBody = nullptr;
 };
+
 class LeftFlipper : public PhysicEntity
 {
 public:
@@ -633,6 +638,23 @@ private:
 	Texture2D texture;
 	int restitution;
 
+};
+
+class MultiplierZone : public PhysicEntity
+{
+public:
+	MultiplierZone(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, int _multiplier)
+		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 2) 
+		// Even though it says that the multiplier is 2, since the sensor detects the ball twice, it's going to be 4
+		, multiplier(_multiplier)
+	{
+	}
+	void Update() override
+	{
+	}
+
+private:
+	int multiplier;
 };
 
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -719,6 +741,9 @@ bool ModuleGame::Start()
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
+	entities.emplace_back(new MultiplierZone(App->physics, 131, 171, 38, this, 2));
+	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
+
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
 
@@ -743,10 +768,14 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyA == entityBody || bodyB == entityBody) {
 			// Gets the score value of the current entity
 			int score = entities[i]->GetScoreValue();
+			int multiplier = entities[i]->GetMultiplierValue();
+			if (multiplier > 1) {
+				MultiplyScore(multiplier);
+			}
 			if (score > 0) {
 				// Adds the score
 				AddScore(score);
-			}
+			}			
 		}
 	}
 }
@@ -754,6 +783,14 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 void ModuleGame::AddScore(int points)
 {
 	currentScore += points;
+	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+}
+
+void ModuleGame::MultiplyScore(int multiplier)
+{
+	scoreMultiplier = multiplier;
+	currentScore *= scoreMultiplier;
+	TraceLog(LOG_INFO, "Multiplying score");
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }
 

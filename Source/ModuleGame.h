@@ -24,7 +24,8 @@ enum class EntityType {
 	ROUND_BUMPER,
 	TRIANGLE_BUMPER,
 	FLIPPER,
-	SPRING
+	SPRING,
+	MULTIPLIER
 };
 
 class ModuleGame : public Module
@@ -38,13 +39,13 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void AddScore(int points);
+	void MultiplyScore(int multiplier);
 
 public:
 	std::vector<PhysicEntity*> entities;
 	Texture2D ballTexture;
 	bool changeGravity;
 	bool bounceMode;
-	void CreateBall();
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
 	Ball* ball;
@@ -52,7 +53,9 @@ public:
 	SpringLauncherEntity* springLauncherEntity;
 	LeftFlipper* leftFlipperEntity;
 	RightFlipper* rightFlipperEntity;
-	int currentScore;
+	int currentScore = 0;
+	int scoreMultiplier = 1;
 	int previousScore;
 	int highestScore;
+	bool isMultiplied = false;
 };
