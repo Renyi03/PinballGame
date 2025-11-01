@@ -97,7 +97,7 @@ public:
 	291, 939,
 	291, 921,
 	454, 838,
-	491, 838,
+	491, 832,
 	491, 556,
 	472, 532,
 	486, 514,
@@ -178,7 +178,7 @@ public:
 	47, 570,
 	30, 591,
 	7, 633,
-	7, 838,
+	7, 832,
 	46, 838,
 	209, 922,
 	208, 939,
@@ -206,7 +206,7 @@ public:
 		452, 713,
 		455, 747,
 		447, 756,
-		389, 801
+		359, 801
 	};
 	BoardNearFlippersR(ModulePhysics* physics, int _x, int _y, Module* _listener)
 		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener)
@@ -702,8 +702,8 @@ bool ModuleGame::Start()
 	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
-	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-110, SCREEN_HEIGHT-140, leftJoint);
-	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+70, SCREEN_HEIGHT-140, rightJoint);
+	App->physics->CreateLeftFlipper(SCREEN_WIDTH/2-115, SCREEN_HEIGHT-140, leftJoint);
+	App->physics->CreateRightFlipper(SCREEN_WIDTH/2+65, SCREEN_HEIGHT-140, rightJoint);
 
 
 	return ret;
