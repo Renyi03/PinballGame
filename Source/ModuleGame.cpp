@@ -478,8 +478,9 @@ private:
 class YellowBumper : public PhysicEntity
 {
 public:
-	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D texture)
+	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::BUMPER, 50)
+		, texture(_texture)
 	{
 	}
 	void Update() override
@@ -497,8 +498,9 @@ private:
 class RedBumper : public PhysicEntity
 {
 public:
-	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D texture)
+	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener, EntityType::BUMPER, 100)
+		, texture(_texture)
 	{
 	}
 	void Update() override
@@ -516,8 +518,9 @@ private:
 class BlueBumper : public PhysicEntity
 {
 public:
-	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D texture)
+	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener, EntityType::BUMPER, 25)
+		, texture(_texture)
 	{
 	}
 	void Update() override
