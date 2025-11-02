@@ -9,8 +9,8 @@ class PhysicEntity
 {
 protected:
 
-	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0)
-		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue)
+	PhysicEntity(PhysBody* _body, Module* _listener, EntityType _entityType = EntityType::DEFAULT, int _scoreValue = 0, int _multiplierValue = 1, bool _isMiku = false)
+		: body(_body), listener(_listener), entityType(_entityType), scoreValue(_scoreValue), multiplierValue(_multiplierValue), isMiku(_isMiku)
 	{
 		if (_body != nullptr) {
 			body->listener = _listener;
@@ -37,12 +37,18 @@ public:
 	int GetScoreValue() {
 		return scoreValue;
 	}
+	int GetMultiplierValue() {
+		return multiplierValue;
+	}
+
+	bool isMiku;
 
 protected:
 	PhysBody* body;
 	Module* listener;
 	EntityType entityType;
 	int scoreValue;
+	double multiplierValue;
 };
 
 class Board : public PhysicEntity
@@ -77,7 +83,7 @@ public:
 		209, 939
 	};
 	Board(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardVertices, 52), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardVertices, 52), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -119,7 +125,7 @@ public:
 	503, 939
 	};
 	BoardRightWall(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardRightWallVertices, 50), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardRightWallVertices, 50), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -183,7 +189,7 @@ public:
 	7, 939
 	};
 	BoardLeftWall(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardLeftWallVertices, 28), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardLeftWallVertices, 28), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -207,7 +213,7 @@ public:
 		359, 801
 	};
 	BoardNearFlippersR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -231,7 +237,7 @@ public:
 	141, 801
 	};
 	BoardNearFlippersL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -259,7 +265,7 @@ public:
 	351, 721
 	};
 	BoardTriangleR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleRVertices, 20), _listener, EntityType::TRIANGLE_BUMPER, 30)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleRVertices, 20), _listener, EntityType::BUMPER, 30)
 	{
 	}
 	void Update() override
@@ -287,7 +293,7 @@ public:
 	149, 721
 	};
 	BoardTriangleL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleLVertices, 20), _listener, EntityType::TRIANGLE_BUMPER, 30)
+		: PhysicEntity(physics->CreateBumper(0, 0, boardTriangleLVertices, 20), _listener, EntityType::BUMPER, 30)
 	{
 	}
 	void Update() override
@@ -315,7 +321,7 @@ public:
 	259, 555
 	};
 	BoardRhombus(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardRhombusVertices, 20), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardRhombusVertices, 20), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -339,7 +345,7 @@ public:
 	358, 466
 	};
 	BoardOvalR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardOvalRVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardOvalRVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -363,7 +369,7 @@ public:
 	191, 465
 	};
 	BoardOvalL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardOvalLVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardOvalLVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -408,7 +414,7 @@ public:
 	133, 501
 	};
 	BoardLeftPassage(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardLeftPassageVertices, 54), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardLeftPassageVertices, 54), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -432,7 +438,7 @@ public:
 	302, 170
 	};
 	BoardSmallOvalR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalRVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalRVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -456,7 +462,7 @@ public:
 	244, 170
 	};
 	BoardSmallOvalL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalLVertices, 12), _listener)
+		: PhysicEntity(physics->CreateChain(0, 0, boardSmallOvalLVertices, 12), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -472,7 +478,7 @@ class YellowBumper : public PhysicEntity
 {
 public:
 	YellowBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::ROUND_BUMPER, 50)
+		: PhysicEntity(physics->CreateCircularBumper(279, 379, 38), _listener, EntityType::BUMPER, 50)
 	{
 	}
 	void Update() override
@@ -488,7 +494,7 @@ class RedBumper : public PhysicEntity
 {
 public:
 	RedBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener, EntityType::ROUND_BUMPER, 100)
+		: PhysicEntity(physics->CreateCircularBumper(338, 295, 38), _listener, EntityType::BUMPER, 100)
 	{
 	}
 	void Update() override
@@ -504,7 +510,7 @@ class BlueBumper : public PhysicEntity
 {
 public:
 	BlueBumper(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener, EntityType::ROUND_BUMPER, 25)
+		: PhysicEntity(physics->CreateCircularBumper(220, 295, 38), _listener, EntityType::BUMPER, 25)
 	{
 	}
 	void Update() override
@@ -569,6 +575,7 @@ private:
 	b2PrismaticJoint* springLauncherJoint = nullptr;
 	b2Body* springPlungerBody = nullptr;
 };
+
 class LeftFlipper : public PhysicEntity
 {
 public:
@@ -646,6 +653,39 @@ private:
 
 };
 
+class MultiplierZone : public PhysicEntity
+{
+public:
+	MultiplierZone(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, int _multiplier)
+		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 2) 
+		// Even though it says that the multiplier is 2, since the sensor detects the ball twice, it's going to be 4
+		, multiplier(_multiplier)
+	{
+	}
+	void Update() override
+	{
+	}
+
+private:
+	int multiplier;
+	Texture2D texture;
+};
+
+class Miku : public PhysicEntity
+{
+public:
+	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener)
+	: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 1, true)
+	{
+	}
+	void Update() override
+	{
+	}
+
+private:
+	Texture2D texture;
+};
+
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
@@ -659,8 +699,18 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	ballTexture = LoadTexture("Assets/Turbo.png");
+	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
+	flipperHit = LoadSound("Assets/Sounds/flipper_hit.wav");
+	flipperNoHit = LoadSound("Assets/Sounds/flipper_no_hit.wav");
+	miku = LoadSound("Assets/Sounds/miku.wav");
+	wallHit = LoadSound("Assets/Sounds/wall_hit.wav");
+	bgm = LoadMusicStream("Assets/Sounds/bgm.wav");
+	SetMusicVolume(bgm, 0.10f);
+	PlayMusicStream(bgm);
+
 	bool ret = true;
 	changeGravity = false;
+
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");
 	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
@@ -731,6 +781,25 @@ bool ModuleGame::Start()
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
+	entities.emplace_back(new MultiplierZone(App->physics, 132, 171, 22, this, 2));
+	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
+
+	M = new Miku(App->physics, 116, 541, 22, this);
+	entities.emplace_back(M);
+	TraceLog(LOG_INFO, "Created M - entities.size(): %d", entities.size());
+
+	I = new Miku(App->physics, 280, 262, 22, this);
+	entities.emplace_back(I);
+	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
+
+	K = new Miku(App->physics, 317, 479, 22, this);
+	entities.emplace_back(K);
+	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
+
+	U = new Miku(App->physics, 470, 472, 22, this);
+	entities.emplace_back(U);
+	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
+
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
 
@@ -755,9 +824,32 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyA == entityBody || bodyB == entityBody) {
 			// Gets the score value of the current entity
 			int score = entities[i]->GetScoreValue();
+			double multiplier = entities[i]->GetMultiplierValue();
+			bool miku = entities[i]->isMiku;
+			if (multiplier > 1) {
+				MultiplyScore(multiplier);
+			}
 			if (score > 0) {
 				// Adds the score
 				AddScore(score);
+			}
+			// If the entity is a Miku sensor
+			if (miku == true) {
+				// Adds to the counter to know how many sensors have been activated
+				++mikuCtr;
+				// We put the boolean of the sensor in false so it can't be activated again
+				entities[i]->isMiku = false;
+				TraceLog(LOG_INFO, "Miku counter: %d", mikuCtr);
+				// If 4 Miku sensors are activated, Miku Combo is activated
+				if (mikuCtr == 4) {
+					MikuCombo();
+				}
+			}
+			if (entities[i]->GetEntityType() == EntityType::BUMPER) {
+				PlaySound(bumperHit);
+			}
+			else if (entities[i]->GetEntityType() == EntityType::FLIPPER && (IsKeyDown(KEY_RIGHT) == true || IsKeyDown(KEY_LEFT))) {
+				PlaySound(flipperHit);
 			}
 		}
 	}
@@ -765,8 +857,35 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 void ModuleGame::AddScore(int points)
 {
+	// Addes the score to the current score
 	currentScore += points;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+}
+
+void ModuleGame::MultiplyScore(double multiplier)
+{
+	// Multiplies the score multiplier to the current score
+	scoreMultiplier = multiplier;
+	currentScore *= scoreMultiplier;
+	TraceLog(LOG_INFO, "Multiplying score");
+	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+}
+
+void ModuleGame::MikuCombo()
+{
+	TraceLog(LOG_INFO, "MIKU COMBO!!!!");
+	PlaySound(miku);
+	// Miku combo multiplies the current score by 3
+	currentScore *= 3;
+	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+	// Activates all sensors again
+	M->isMiku = true;
+	I->isMiku = true;
+	K->isMiku = true;
+	U->isMiku = true;
+	// Resets Miku Counter
+	mikuCtr = 0;
+	TraceLog(LOG_INFO, "Miku combo reset");
 }
 
 // Update: draw background
@@ -778,7 +897,7 @@ update_status ModuleGame::Update()
 			Ball* ball = dynamic_cast<Ball*>(entity);
 			if (ball != nullptr) {
 				Vector2 pos = ball->GetPosition();
-				if (pos.y >= 900.0f) {
+				if (pos.y >= 925.0f) {
 					delete ball;  // This will automatically destroy the physics body via destructor
 					ball = nullptr;
 					entity = nullptr;
@@ -805,7 +924,7 @@ update_status ModuleGame::Update()
 
 		// Main text
 		DrawText("GAME OVER", SCREEN_WIDTH / 2 - 160, SCREEN_HEIGHT / 2 - 120, 50, RED);
-		
+
 		DrawText(TextFormat("YOUR SCORE: %d", currentScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 - 40, 30, WHITE);
 		DrawText(TextFormat("HIGH SCORE: %d", highestScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2, 30, YELLOW);
 
@@ -825,8 +944,9 @@ update_status ModuleGame::Update()
 
 		return UPDATE_CONTINUE;
 	}
+		UpdateMusicStream(bgm);
 
-	DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
+		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
@@ -869,7 +989,11 @@ update_status ModuleGame::Update()
 		}
 		else {
 			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
+
 			TraceLog(LOG_INFO, "Bounce mode activated");
+
+			TraceLog(LOG_INFO, "Bounce mode deactivated");
+
 		}
 	}
 	return UPDATE_CONTINUE;
