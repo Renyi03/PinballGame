@@ -17,14 +17,16 @@ class BoardTriangleR;
 class SpringLauncherEntity;
 class LeftFlipper;
 class RightFlipper;
+class Miku;
 
 enum class EntityType {
 	DEFAULT,
 	BALL,
-	ROUND_BUMPER,
-	TRIANGLE_BUMPER,
+	BUMPER,
 	FLIPPER,
-	SPRING
+	SPRING,
+	MULTIPLIER,
+	WALL
 };
 
 class ModuleGame : public Module
@@ -38,6 +40,8 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void AddScore(int points);
+	void MultiplyScore(double multiplier);
+	void MikuCombo();
 
 public:
 	std::vector<PhysicEntity*> entities;
@@ -50,7 +54,6 @@ public:
 	Texture2D rightTriangleBumper;
 	bool changeGravity;
 	bool bounceMode;
-	void CreateBall();
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
 	Ball* ball;
@@ -58,7 +61,21 @@ public:
 	SpringLauncherEntity* springLauncherEntity;
 	LeftFlipper* leftFlipperEntity;
 	RightFlipper* rightFlipperEntity;
-	int currentScore;
+	Miku* M;
+	Miku* I;
+	Miku* K;
+	Miku* U;
+	int currentScore = 0;
+	int scoreMultiplier = 1;
 	int previousScore;
 	int highestScore;
+	bool isMultiplied = false;
+	int mikuCtr = 0;
+	Music bgm;
+	Sound bumperHit;
+	Sound flipperHit;
+	Sound flipperNoHit;
+	Sound miku;
+	Sound spring;
+	Sound wallHit;
 };
