@@ -757,6 +757,8 @@ bool ModuleGame::Start()
 	sNailTexture = LoadTexture("Assets/sNail.png");
 	rightFlipperTexture = LoadTexture("Assets/rightFlipper.png");
 	leftFlipperTexture = LoadTexture("Assets/leftFlipper.png");
+	rightSlugTexture = LoadTexture("Assets/rightSlug.png");
+	leftSlugTexture = LoadTexture("Assets/leftSlug.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -1081,5 +1083,7 @@ update_status ModuleGame::Update()
 	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
 	DrawTexture(sNailTexture, 244, 163, WHITE);
 	DrawTexture(sNailTexture, 302, 163, WHITE);
+	DrawTexture(rightSlugTexture, 347, 580, WHITE);
+	DrawTexture(leftSlugTexture, 32, 635, WHITE);
 	return UPDATE_CONTINUE;
 }
