@@ -805,7 +805,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
-	entities.emplace_back(new MultiplierZone(App->physics, 132, 171, 22, this, 2));
+	entities.emplace_back(new MultiplierZone(App->physics, 138, 344, 22, this, 2));
 	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
 
 	M = new Miku(App->physics, 116, 541, 22, this);
@@ -816,7 +816,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(I);
 	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
 
-	K = new Miku(App->physics, 317, 479, 22, this);
+	K = new Miku(App->physics, 443, 661, 22, this);
 	entities.emplace_back(K);
 	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
 
@@ -876,6 +876,9 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			else if (entities[i]->GetEntityType() == EntityType::FLIPPER && (IsKeyDown(KEY_RIGHT) == true || IsKeyDown(KEY_LEFT))) {
 				PlaySound(flipperHit);
 			}
+			else if (entities[i]->GetEntityType() == EntityType::WALL) {
+				PlaySound(wallHit);
+			}
 		}
 	}
 }
@@ -903,6 +906,8 @@ void ModuleGame::MikuCombo()
 	// Miku combo multiplies the current score by 3
 	currentScore *= 3;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+	totalBalls++;
+	TraceLog(LOG_INFO, "Extra ball! Total balls: %d", totalBalls);
 	// Activates all sensors again
 	M->isMiku = true;
 	I->isMiku = true;
@@ -984,12 +989,14 @@ update_status ModuleGame::Update()
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
 	if (IsKeyDown(KEY_LEFT)) {
+		PlaySound(flipperNoHit);
 		leftJoint->SetMotorSpeed(-15.0f);
 	}
 	else {
 		leftJoint->SetMotorSpeed(15.0f);
 	}
 	if (IsKeyDown(KEY_RIGHT)) {
+		PlaySound(flipperNoHit);
 		rightJoint->SetMotorSpeed(15.0f);
 	}
 	else {
