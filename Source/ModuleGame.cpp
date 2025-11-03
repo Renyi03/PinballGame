@@ -591,10 +591,6 @@ public:
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
 			}
-			else
-			{
-				springLauncherJoint->SetMotorSpeed(0.0f);
-			}
 		}
 
 	}
@@ -644,10 +640,17 @@ public:
 	Ball(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
 		, texture(_texture)
+		, physics(physics)
 	{
 
 	}
-
+	~Ball() override
+	{
+		if (body != nullptr && physics != nullptr) {
+			physics->DestroyBody(body);
+			body = nullptr;
+		}
+	}
 	void Update() override
 	{
 		int x, y;
@@ -660,8 +663,16 @@ public:
 		float rotation = body->GetRotation() * RAD2DEG;
 		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
 	}
+	Vector2 GetPosition() const
+	{
+		int x = 0, y = 0;
+		if (body != nullptr)
+			body->GetPhysicPosition(x, y);
+		return { (float)x, (float)y };
+	}
 private:
 	Texture2D texture;
+	ModulePhysics* physics;
 	int restitution;
 
 };
@@ -704,7 +715,8 @@ ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start
 }
 
 ModuleGame::~ModuleGame()
-{}
+{
+}
 
 // Load assets
 bool ModuleGame::Start()
@@ -801,7 +813,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
-	entities.emplace_back(new MultiplierZone(App->physics, 132, 171, 22, this, 2));
+	entities.emplace_back(new MultiplierZone(App->physics, 138, 344, 22, this, 2));
 	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
 
 	M = new Miku(App->physics, 116, 541, 22, this);
@@ -812,7 +824,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(I);
 	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
 
-	K = new Miku(App->physics, 317, 479, 22, this);
+	K = new Miku(App->physics, 443, 661, 22, this);
 	entities.emplace_back(K);
 	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
 
@@ -872,6 +884,9 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			else if (entities[i]->GetEntityType() == EntityType::FLIPPER && (IsKeyDown(KEY_RIGHT) == true || IsKeyDown(KEY_LEFT))) {
 				PlaySound(flipperHit);
 			}
+			else if (entities[i]->GetEntityType() == EntityType::WALL) {
+				PlaySound(wallHit);
+			}
 		}
 	}
 }
@@ -899,6 +914,8 @@ void ModuleGame::MikuCombo()
 	// Miku combo multiplies the current score by 3
 	currentScore *= 3;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+	totalBalls++;
+	TraceLog(LOG_INFO, "Extra ball! Total balls: %d", totalBalls);
 	// Activates all sensors again
 	M->isMiku = true;
 	I->isMiku = true;
@@ -912,23 +929,82 @@ void ModuleGame::MikuCombo()
 // Update: draw background
 update_status ModuleGame::Update()
 {
-	UpdateMusicStream(bgm);
-	for (auto& entity : entities) {
-		entity->Update();
+
+	if (!roundOver) {
+		for (auto& entity : entities) {
+			Ball* ball = dynamic_cast<Ball*>(entity);
+			if (ball != nullptr) {
+				Vector2 pos = ball->GetPosition();
+				if (pos.y >= 925.0f) {
+					delete ball;  // This will automatically destroy the physics body via destructor
+					ball = nullptr;
+					entity = nullptr;
+					if (currentBall < totalBalls) {
+						entity = new Ball(App->physics, 480, 200, this, ballTexture);
+						currentBall++;
+					}
+					else {
+						roundOver = true;
+						entity = new Ball(App->physics, 480, 200, this, ballTexture);
+						break;
+					}
+
+				}
+			}
+			if (entity != nullptr)
+				entity->Update();
+		}
 	}
 
-	DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
+	if (roundOver) {
+
+		if (currentScore > highestScore) {
+			highestScore = currentScore;
+		}
+
+		// Dark overlay
+		DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.6f));
+
+		// Main text
+		DrawText("GAME OVER", SCREEN_WIDTH / 2 - 160, SCREEN_HEIGHT / 2 - 120, 50, RED);
+
+		DrawText(TextFormat("YOUR SCORE: %d", currentScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 - 40, 30, WHITE);
+		DrawText(TextFormat("HIGH SCORE: %d", highestScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2, 30, YELLOW);
+		DrawText(TextFormat("PREVIOUS SCORE: %d", previousScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 40, 30, YELLOW);
+
+		// Options
+		DrawText("Press [R] to Restart", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 100, 25, LIGHTGRAY);
+		DrawText("Press [ESC] to Quit", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 140, 25, LIGHTGRAY);
+
+		if (IsKeyPressed(KEY_R)) {
+			// Reset round
+			previousScore = currentScore;
+			currentScore = 0;
+			currentBall = 1;
+			roundOver = false;
+		}
+		if (IsKeyPressed(KEY_ESCAPE)) {
+			return UPDATE_STOP; // Ends the game
+		}
+
+		return UPDATE_CONTINUE;
+	}
+		UpdateMusicStream(bgm);
+
+		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
 	if (IsKeyDown(KEY_LEFT)) {
+		PlaySound(flipperNoHit);
 		leftJoint->SetMotorSpeed(-15.0f);
 	}
 	else {
 		leftJoint->SetMotorSpeed(15.0f);
 	}
 	if (IsKeyDown(KEY_RIGHT)) {
+		PlaySound(flipperNoHit);
 		rightJoint->SetMotorSpeed(15.0f);
 	}
 	else {
@@ -960,7 +1036,11 @@ update_status ModuleGame::Update()
 		}
 		else {
 			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
+
+			TraceLog(LOG_INFO, "Bounce mode activated");
+
 			TraceLog(LOG_INFO, "Bounce mode deactivated");
+
 		}
 	}
 

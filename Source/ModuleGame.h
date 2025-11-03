@@ -54,6 +54,7 @@ public:
 	Texture2D rightTriangleBumper;
 	bool changeGravity;
 	bool bounceMode;
+	void CreateBall();
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
 	Ball* ball;
@@ -67,8 +68,11 @@ public:
 	Miku* U;
 	int currentScore = 0;
 	int scoreMultiplier = 1;
-	int previousScore;
-	int highestScore;
+	int previousScore = 0;
+	int highestScore = 0;
+	int totalBalls = 3;     // Max balls per round
+	int currentBall = 1;    // How many have been used
+	bool roundOver = false; // To prevent respawning after the last ball
 	bool isMultiplied = false;
 	int mikuCtr = 0;
 	Music bgm;
