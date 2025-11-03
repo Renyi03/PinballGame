@@ -71,7 +71,7 @@ public:
 	void DestroyBody(PhysBody* pbody);
 
 private:
-
-
+	b2Body* ground = nullptr;
+	b2MouseJoint* mouse_joint = nullptr;
 	bool debug;
 };

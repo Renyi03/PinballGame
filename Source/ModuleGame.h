@@ -52,6 +52,7 @@ public:
 	Texture2D bordersTexture;
 	Texture2D leftTriangleBumper;
 	Texture2D rightTriangleBumper;
+	Texture2D sNailTexture;
 	bool changeGravity;
 	bool bounceMode;
 	void CreateBall();
@@ -74,12 +75,13 @@ public:
 	int currentBall = 1;    // How many have been used
 	bool roundOver = false; // To prevent respawning after the last ball
 	bool isMultiplied = false;
+	bool flipperSound = true;
 	int mikuCtr = 0;
 	Music bgm;
 	Sound bumperHit;
-	Sound flipperHit;
-	Sound flipperNoHit;
+	Sound flipper;
 	Sound miku;
 	Sound spring;
 	Sound wallHit;
+	Sound multiplierSound;
 };

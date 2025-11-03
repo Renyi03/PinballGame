@@ -205,16 +205,20 @@ private:
 class BoardNearFlippersR : public PhysicEntity
 {
 public:
-	static constexpr int boardNearFlippersRVertices[12] = {
+	static constexpr int boardNearFlippersRVertices[20] = {
 		347, 777,
-		440, 727,
-		452, 713,
-		455, 747,
-		447, 756,
+		436, 730,
+		444, 718,
+		444, 590,
+		450, 580,
+		462, 580,
+		468, 590,
+		468, 735,
+		452, 755,
 		359, 801
 	};
 	BoardNearFlippersR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener, EntityType::WALL)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 20), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -229,16 +233,20 @@ private:
 class BoardNearFlippersL : public PhysicEntity
 {
 public:
-	static constexpr int boardNearFlippersLVertices[12] = {
-	53, 756,
-	45, 747,
-	48, 713,
-	60, 727,
-	153, 777,
-	141, 801
+	static constexpr int boardNearFlippersLVertices[20] = {
+		48, 755,
+		32, 735,
+		32, 642,
+		35, 635,
+		52, 635,
+		56, 642,
+		56, 718,
+		64, 730,
+		153, 777,
+		141, 801
 	};
 	BoardNearFlippersL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 12), _listener, EntityType::WALL)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 20), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -538,7 +546,7 @@ private:
 class SpringLauncherEntity : public PhysicEntity
 {
 public:
-	SpringLauncherEntity(ModulePhysics* physics, int x, int y, Module* listener)
+	SpringLauncherEntity(ModulePhysics* physics, int x, int y, Module* listener, Sound spring)
 		: PhysicEntity(nullptr, listener)
 	{
 		// Get both the plunger and the base from physics
@@ -582,6 +590,7 @@ public:
 				//^^25 is conversion factor from seconds to whatever box2D uses, and 60 is like the max cap of how long you hold
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
+				PlaySound(spring);
 			}
 		}
 
@@ -590,6 +599,7 @@ private:
 	Texture2D texture;
 	b2PrismaticJoint* springLauncherJoint = nullptr;
 	b2Body* springPlungerBody = nullptr;
+	Sound spring = LoadSound("Assets/Sounds/spring.wav");
 };
 
 class LeftFlipper : public PhysicEntity
@@ -722,12 +732,13 @@ bool ModuleGame::Start()
 	bordersTexture = LoadTexture("Assets/Borders.png");
 	leftTriangleBumper = LoadTexture("Assets/leftTriangleBumper.png");
 	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
+	sNailTexture = LoadTexture("Assets/sNail.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
-	flipperHit = LoadSound("Assets/Sounds/flipper_hit.wav");
-	flipperNoHit = LoadSound("Assets/Sounds/flipper_no_hit.wav");
+	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
 	miku = LoadSound("Assets/Sounds/miku.wav");
 	wallHit = LoadSound("Assets/Sounds/wall_hit.wav");
+	multiplierSound = LoadSound("Assets/Sounds/multiplier.wav");
 	bgm = LoadMusicStream("Assets/Sounds/bgm.wav");
 	SetMusicVolume(bgm, 0.10f);
 	PlayMusicStream(bgm);
@@ -789,7 +800,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this, blueBumperTexture)); 
 	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
 
-	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
+	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this, spring);
 	entities.emplace_back(springLauncherEntity);
 	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
 
@@ -816,7 +827,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(I);
 	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
 
-	K = new Miku(App->physics, 443, 661, 22, this);
+	K = new Miku(App->physics, 347, 747, 22, this);
 	entities.emplace_back(K);
 	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
 
@@ -873,9 +884,6 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			if (entities[i]->GetEntityType() == EntityType::BUMPER) {
 				PlaySound(bumperHit);
 			}
-			else if (entities[i]->GetEntityType() == EntityType::FLIPPER && (IsKeyDown(KEY_RIGHT) == true || IsKeyDown(KEY_LEFT))) {
-				PlaySound(flipperHit);
-			}
 			else if (entities[i]->GetEntityType() == EntityType::WALL) {
 				PlaySound(wallHit);
 			}
@@ -895,6 +903,7 @@ void ModuleGame::MultiplyScore(double multiplier)
 	// Multiplies the score multiplier to the current score
 	scoreMultiplier = multiplier;
 	currentScore *= scoreMultiplier;
+	PlaySound(multiplierSound);
 	TraceLog(LOG_INFO, "Multiplying score");
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }
@@ -906,8 +915,8 @@ void ModuleGame::MikuCombo()
 	// Miku combo multiplies the current score by 3
 	currentScore *= 3;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+	// Miku combo spawns an extra ball!
 	totalBalls++;
-	TraceLog(LOG_INFO, "Extra ball! Total balls: %d", totalBalls);
 	// Activates all sensors again
 	M->isMiku = true;
 	I->isMiku = true;
@@ -921,7 +930,6 @@ void ModuleGame::MikuCombo()
 // Update: draw background
 update_status ModuleGame::Update()
 {
-
 	if (!roundOver) {
 		for (auto& entity : entities) {
 			Ball* ball = dynamic_cast<Ball*>(entity);
@@ -949,7 +957,7 @@ update_status ModuleGame::Update()
 	}
 
 	if (roundOver) {
-
+		totalBalls = 3;
 		if (currentScore > highestScore) {
 			highestScore = currentScore;
 		}
@@ -985,21 +993,29 @@ update_status ModuleGame::Update()
 
 		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+	/*if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
-	}
+	}*/
 	if (IsKeyDown(KEY_LEFT)) {
-		PlaySound(flipperNoHit);
+		if (flipperSound == true) {
+			PlaySound(flipper);
+		}
+		flipperSound = false;
 		leftJoint->SetMotorSpeed(-15.0f);
 	}
-	else {
+	else if (IsKeyReleased(KEY_LEFT)) {
+		flipperSound = true;
 		leftJoint->SetMotorSpeed(15.0f);
 	}
 	if (IsKeyDown(KEY_RIGHT)) {
-		PlaySound(flipperNoHit);
+		if (flipperSound == true) {
+			PlaySound(flipper);
+		}
+		flipperSound = false;
 		rightJoint->SetMotorSpeed(15.0f);
 	}
-	else {
+	else if (IsKeyReleased(KEY_RIGHT)){
+		flipperSound = true;
 		rightJoint->SetMotorSpeed(-15.0f);
 	}
 
@@ -1039,5 +1055,7 @@ update_status ModuleGame::Update()
 	DrawTexture(bordersTexture, 0, 0, WHITE);
 	DrawTexture(leftTriangleBumper, 82, 604, WHITE);
 	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
+	DrawTexture(sNailTexture, 244, 163, WHITE);
+	DrawTexture(sNailTexture, 302, 163, WHITE);
 	return UPDATE_CONTINUE;
 }
