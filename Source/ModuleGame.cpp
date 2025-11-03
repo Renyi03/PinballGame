@@ -538,7 +538,7 @@ private:
 class SpringLauncherEntity : public PhysicEntity
 {
 public:
-	SpringLauncherEntity(ModulePhysics* physics, int x, int y, Module* listener)
+	SpringLauncherEntity(ModulePhysics* physics, int x, int y, Module* listener, Sound spring)
 		: PhysicEntity(nullptr, listener)
 	{
 		// Get both the plunger and the base from physics
@@ -582,6 +582,7 @@ public:
 				//^^25 is conversion factor from seconds to whatever box2D uses, and 60 is like the max cap of how long you hold
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
+				PlaySound(spring);
 			}
 		}
 
@@ -590,6 +591,7 @@ private:
 	Texture2D texture;
 	b2PrismaticJoint* springLauncherJoint = nullptr;
 	b2Body* springPlungerBody = nullptr;
+	Sound spring = LoadSound("Assets/Sounds/spring.wav");
 };
 
 class LeftFlipper : public PhysicEntity
@@ -724,8 +726,7 @@ bool ModuleGame::Start()
 	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
-	flipperHit = LoadSound("Assets/Sounds/flipper_hit.wav");
-	flipperNoHit = LoadSound("Assets/Sounds/flipper_no_hit.wav");
+	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
 	miku = LoadSound("Assets/Sounds/miku.wav");
 	wallHit = LoadSound("Assets/Sounds/wall_hit.wav");
 	bgm = LoadMusicStream("Assets/Sounds/bgm.wav");
@@ -789,7 +790,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(new BlueBumper(App->physics, 0, 0, this, blueBumperTexture)); 
 	TraceLog(LOG_INFO, "Created Board Blue Bumper - entities.size(): %d", entities.size());
 
-	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this);
+	springLauncherEntity = new SpringLauncherEntity(App->physics, 520, 800, this, spring);
 	entities.emplace_back(springLauncherEntity);
 	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
 
@@ -986,18 +987,25 @@ update_status ModuleGame::Update()
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
 	}
 	if (IsKeyDown(KEY_LEFT)) {
-		PlaySound(flipperNoHit);
-		
+		if (flipperSound == true) {
+			PlaySound(flipper);
+		}
+		flipperSound = false;
 		leftJoint->SetMotorSpeed(-15.0f);
 	}
-	else {
+	else if (IsKeyReleased(KEY_LEFT)) {
+		flipperSound = true;
 		leftJoint->SetMotorSpeed(15.0f);
 	}
 	if (IsKeyDown(KEY_RIGHT)) {
-		PlaySound(flipperNoHit);
+		if (flipperSound == true) {
+			PlaySound(flipper);
+		}
+		flipperSound = false;
 		rightJoint->SetMotorSpeed(15.0f);
 	}
-	else {
+	else if (IsKeyReleased(KEY_RIGHT)){
+		flipperSound = true;
 		rightJoint->SetMotorSpeed(-15.0f);
 	}
 

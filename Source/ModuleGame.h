@@ -78,8 +78,7 @@ public:
 	int mikuCtr = 0;
 	Music bgm;
 	Sound bumperHit;
-	Sound flipperHit;
-	Sound flipperNoHit;
+	Sound flipper;
 	Sound miku;
 	Sound spring;
 	Sound wallHit;
