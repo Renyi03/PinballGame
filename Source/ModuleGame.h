@@ -74,6 +74,7 @@ public:
 	int currentBall = 1;    // How many have been used
 	bool roundOver = false; // To prevent respawning after the last ball
 	bool isMultiplied = false;
+	bool flipperSound = true;
 	int mikuCtr = 0;
 	Music bgm;
 	Sound bumperHit;

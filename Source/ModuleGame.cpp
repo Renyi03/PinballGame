@@ -873,9 +873,6 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			if (entities[i]->GetEntityType() == EntityType::BUMPER) {
 				PlaySound(bumperHit);
 			}
-			else if (entities[i]->GetEntityType() == EntityType::FLIPPER && (IsKeyDown(KEY_RIGHT) == true || IsKeyDown(KEY_LEFT))) {
-				PlaySound(flipperHit);
-			}
 			else if (entities[i]->GetEntityType() == EntityType::WALL) {
 				PlaySound(wallHit);
 			}
@@ -906,8 +903,8 @@ void ModuleGame::MikuCombo()
 	// Miku combo multiplies the current score by 3
 	currentScore *= 3;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
+	// Miku combo spawns an extra ball!
 	totalBalls++;
-	TraceLog(LOG_INFO, "Extra ball! Total balls: %d", totalBalls);
 	// Activates all sensors again
 	M->isMiku = true;
 	I->isMiku = true;
@@ -949,7 +946,7 @@ update_status ModuleGame::Update()
 	}
 
 	if (roundOver) {
-
+		totalBalls = 3;
 		if (currentScore > highestScore) {
 			highestScore = currentScore;
 		}
@@ -990,6 +987,7 @@ update_status ModuleGame::Update()
 	}
 	if (IsKeyDown(KEY_LEFT)) {
 		PlaySound(flipperNoHit);
+		
 		leftJoint->SetMotorSpeed(-15.0f);
 	}
 	else {
