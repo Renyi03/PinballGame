@@ -583,10 +583,6 @@ public:
 				holdTime = 0.0f;
 				springLauncherJoint->SetMotorSpeed(power); // Launch
 			}
-			else
-			{
-				springLauncherJoint->SetMotorSpeed(0.0f);
-			}
 		}
 
 	}
@@ -636,10 +632,17 @@ public:
 	Ball(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircle(_x, _y, 10), _listener)
 		, texture(_texture)
+		, physics(physics)
 	{
 
 	}
-
+	~Ball() override
+	{
+		if (body != nullptr && physics != nullptr) {
+			physics->DestroyBody(body);
+			body = nullptr;
+		}
+	}
 	void Update() override
 	{
 		int x, y;
@@ -652,8 +655,16 @@ public:
 		float rotation = body->GetRotation() * RAD2DEG;
 		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
 	}
+	Vector2 GetPosition() const
+	{
+		int x = 0, y = 0;
+		if (body != nullptr)
+			body->GetPhysicPosition(x, y);
+		return { (float)x, (float)y };
+	}
 private:
 	Texture2D texture;
+	ModulePhysics* physics;
 	int restitution;
 
 };
@@ -696,7 +707,8 @@ ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start
 }
 
 ModuleGame::~ModuleGame()
-{}
+{
+}
 
 // Load assets
 bool ModuleGame::Start()
@@ -904,12 +916,62 @@ void ModuleGame::MikuCombo()
 // Update: draw background
 update_status ModuleGame::Update()
 {
-	UpdateMusicStream(bgm);
-	for (auto& entity : entities) {
-		entity->Update();
+
+	if (!roundOver) {
+		for (auto& entity : entities) {
+			Ball* ball = dynamic_cast<Ball*>(entity);
+			if (ball != nullptr) {
+				Vector2 pos = ball->GetPosition();
+				if (pos.y >= 925.0f) {
+					delete ball;  // This will automatically destroy the physics body via destructor
+					ball = nullptr;
+					entity = nullptr;
+					if (currentBall < totalBalls) {
+						entity = new Ball(App->physics, 480, 200, this, ballTexture);
+						currentBall++;
+					}
+					else {
+						roundOver = true;
+						entity = new Ball(App->physics, 480, 200, this, ballTexture);
+						break;
+					}
+
+				}
+			}
+			if (entity != nullptr)
+				entity->Update();
+		}
 	}
 
-	DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
+	if (roundOver) {
+		// Dark overlay
+		DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.6f));
+
+		// Main text
+		DrawText("GAME OVER", SCREEN_WIDTH / 2 - 160, SCREEN_HEIGHT / 2 - 120, 50, RED);
+
+		DrawText(TextFormat("YOUR SCORE: %d", currentScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 - 40, 30, WHITE);
+		DrawText(TextFormat("HIGH SCORE: %d", highestScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2, 30, YELLOW);
+
+		// Options
+		DrawText("Press [R] to Restart", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 60, 25, LIGHTGRAY);
+		DrawText("Press [ESC] to Quit", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 100, 25, LIGHTGRAY);
+
+		if (IsKeyPressed(KEY_R)) {
+			// Reset round
+			currentScore = 0;
+			currentBall = 1;
+			roundOver = false;
+		}
+		if (IsKeyPressed(KEY_ESCAPE)) {
+			return UPDATE_STOP; // Ends the game
+		}
+
+		return UPDATE_CONTINUE;
+	}
+		UpdateMusicStream(bgm);
+
+		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
@@ -952,7 +1014,11 @@ update_status ModuleGame::Update()
 		}
 		else {
 			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
+
+			TraceLog(LOG_INFO, "Bounce mode activated");
+
 			TraceLog(LOG_INFO, "Bounce mode deactivated");
+
 		}
 	}
 
