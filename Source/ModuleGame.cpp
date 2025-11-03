@@ -944,6 +944,11 @@ update_status ModuleGame::Update()
 	}
 
 	if (roundOver) {
+
+		if (currentScore > highestScore) {
+			highestScore = currentScore;
+		}
+
 		// Dark overlay
 		DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.6f));
 
@@ -952,13 +957,15 @@ update_status ModuleGame::Update()
 
 		DrawText(TextFormat("YOUR SCORE: %d", currentScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 - 40, 30, WHITE);
 		DrawText(TextFormat("HIGH SCORE: %d", highestScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2, 30, YELLOW);
+		DrawText(TextFormat("PREVIOUS SCORE: %d", previousScore), SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 40, 30, YELLOW);
 
 		// Options
-		DrawText("Press [R] to Restart", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 60, 25, LIGHTGRAY);
-		DrawText("Press [ESC] to Quit", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 100, 25, LIGHTGRAY);
+		DrawText("Press [R] to Restart", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 100, 25, LIGHTGRAY);
+		DrawText("Press [ESC] to Quit", SCREEN_WIDTH / 2 - 140, SCREEN_HEIGHT / 2 + 140, 25, LIGHTGRAY);
 
 		if (IsKeyPressed(KEY_R)) {
 			// Reset round
+			previousScore = currentScore;
 			currentScore = 0;
 			currentBall = 1;
 			roundOver = false;

@@ -68,8 +68,8 @@ public:
 	Miku* U;
 	int currentScore = 0;
 	int scoreMultiplier = 1;
-	int previousScore;
-	int highestScore;
+	int previousScore = 0;
+	int highestScore = 0;
 	int totalBalls = 3;     // Max balls per round
 	int currentBall = 1;    // How many have been used
 	bool roundOver = false; // To prevent respawning after the last ball
