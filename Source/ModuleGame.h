@@ -52,6 +52,7 @@ public:
 	Texture2D bordersTexture;
 	Texture2D leftTriangleBumper;
 	Texture2D rightTriangleBumper;
+	Texture2D sNailTexture;
 	bool changeGravity;
 	bool bounceMode;
 	void CreateBall();

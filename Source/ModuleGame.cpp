@@ -730,6 +730,7 @@ bool ModuleGame::Start()
 	bordersTexture = LoadTexture("Assets/Borders.png");
 	leftTriangleBumper = LoadTexture("Assets/leftTriangleBumper.png");
 	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
+	sNailTexture = LoadTexture("Assets/sNail.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipperHit = LoadSound("Assets/Sounds/flipper_hit.wav");
@@ -1047,5 +1048,7 @@ update_status ModuleGame::Update()
 	DrawTexture(bordersTexture, 0, 0, WHITE);
 	DrawTexture(leftTriangleBumper, 82, 604, WHITE);
 	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
+	DrawTexture(sNailTexture, 244, 163, WHITE);
+	DrawTexture(sNailTexture, 302, 163, WHITE);
 	return UPDATE_CONTINUE;
 }
