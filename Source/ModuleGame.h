@@ -53,6 +53,10 @@ public:
 	Texture2D leftTriangleBumper;
 	Texture2D rightTriangleBumper;
 	Texture2D sNailTexture;
+	Texture2D mTexture;
+	Texture2D iTexture;
+	Texture2D kTexture;
+	Texture2D uTexture;
 	bool changeGravity;
 	bool bounceMode;
 	void CreateBall();
