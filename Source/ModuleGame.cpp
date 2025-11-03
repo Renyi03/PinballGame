@@ -818,7 +818,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(I);
 	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
 
-	K = new Miku(App->physics, 443, 661, 22, this);
+	K = new Miku(App->physics, 347, 747, 22, this);
 	entities.emplace_back(K);
 	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
 
