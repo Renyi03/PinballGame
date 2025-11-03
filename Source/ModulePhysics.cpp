@@ -11,7 +11,8 @@
 
 ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	debug = true;
+	mouse_joint = NULL;
+	debug = false;
 }
 
 // Destructor
@@ -25,6 +26,10 @@ bool ModulePhysics::Start()
 
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 	world->SetContactListener(this);
+
+	// Needed to create joints like mouse joint
+	b2BodyDef bd;
+	ground = world->CreateBody(&bd);
 
 	return true;
 }
@@ -49,8 +54,6 @@ update_status ModulePhysics::PreUpdate()
 //
 update_status ModulePhysics::PostUpdate()
 {
-
-
 	if (IsKeyPressed(KEY_F1))
 	{
 		debug = !debug;
@@ -60,6 +63,10 @@ update_status ModulePhysics::PostUpdate()
 	{
 		return UPDATE_CONTINUE;
 	}
+	Vector2 mouseScreenPosition = GetMousePosition();
+
+	b2Vec2 mousePhysicalPosition = { PIXEL_TO_METERS(mouseScreenPosition.x), PIXEL_TO_METERS(mouseScreenPosition.y) };
+	b2Body* selected = nullptr;
 
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels
@@ -131,9 +138,32 @@ update_status ModulePhysics::PostUpdate()
 			}
 			break;
 			}
-
-
+			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) == true && mouse_joint == nullptr && selected == nullptr) {
+				if (f->TestPoint(mousePhysicalPosition)) {
+					selected = b;
+				}
+			}			
 		}
+	}
+	if (selected) {
+		b2MouseJointDef def;
+		def.bodyA = ground;
+		def.bodyB = selected;
+		def.target = mousePhysicalPosition;
+		def.damping = 0.5f;
+		def.stiffness = 2.0f;
+		def.maxForce = 100.0f * selected->GetMass();
+		mouse_joint = (b2MouseJoint*)world->CreateJoint(&def);
+
+	}
+	else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && mouse_joint) {
+		mouse_joint->SetTarget(mousePhysicalPosition);
+		auto physicalPosition = mouse_joint->GetBodyB()->GetPosition();
+		DrawLine(mouseScreenPosition.x, mouseScreenPosition.y, METERS_TO_PIXELS(physicalPosition.x), METERS_TO_PIXELS(physicalPosition.y), RED);
+	}
+	else if (!IsMouseButtonDown(MOUSE_BUTTON_LEFT) && mouse_joint) {
+		world->DestroyJoint(mouse_joint);
+		mouse_joint = nullptr;
 	}
 
 	return UPDATE_CONTINUE;

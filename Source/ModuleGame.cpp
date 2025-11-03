@@ -930,7 +930,6 @@ void ModuleGame::MikuCombo()
 // Update: draw background
 update_status ModuleGame::Update()
 {
-
 	if (!roundOver) {
 		for (auto& entity : entities) {
 			Ball* ball = dynamic_cast<Ball*>(entity);
@@ -994,9 +993,9 @@ update_status ModuleGame::Update()
 
 		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+	/*if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
-	}
+	}*/
 	if (IsKeyDown(KEY_LEFT)) {
 		if (flipperSound == true) {
 			PlaySound(flipper);
