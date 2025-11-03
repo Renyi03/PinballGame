@@ -729,6 +729,7 @@ bool ModuleGame::Start()
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
 	miku = LoadSound("Assets/Sounds/miku.wav");
 	wallHit = LoadSound("Assets/Sounds/wall_hit.wav");
+	multiplierSound = LoadSound("Assets/Sounds/multiplier.wav");
 	bgm = LoadMusicStream("Assets/Sounds/bgm.wav");
 	SetMusicVolume(bgm, 0.10f);
 	PlayMusicStream(bgm);
@@ -893,6 +894,7 @@ void ModuleGame::MultiplyScore(double multiplier)
 	// Multiplies the score multiplier to the current score
 	scoreMultiplier = multiplier;
 	currentScore *= scoreMultiplier;
+	PlaySound(multiplierSound);
 	TraceLog(LOG_INFO, "Multiplying score");
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }

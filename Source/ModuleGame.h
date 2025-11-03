@@ -82,4 +82,5 @@ public:
 	Sound miku;
 	Sound spring;
 	Sound wallHit;
+	Sound multiplierSound;
 };
