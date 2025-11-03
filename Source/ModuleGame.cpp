@@ -205,16 +205,20 @@ private:
 class BoardNearFlippersR : public PhysicEntity
 {
 public:
-	static constexpr int boardNearFlippersRVertices[12] = {
+	static constexpr int boardNearFlippersRVertices[20] = {
 		347, 777,
-		440, 727,
-		452, 713,
-		455, 747,
-		447, 756,
+		436, 730,
+		444, 718,
+		444, 590,
+		450, 580,
+		462, 580,
+		468, 590,
+		468, 735,
+		452, 755,
 		359, 801
 	};
 	BoardNearFlippersR(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 12), _listener, EntityType::WALL)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersRVertices, 20), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -229,16 +233,20 @@ private:
 class BoardNearFlippersL : public PhysicEntity
 {
 public:
-	static constexpr int boardNearFlippersLVertices[12] = {
-	53, 756,
-	45, 747,
-	48, 713,
-	60, 727,
-	153, 777,
-	141, 801
+	static constexpr int boardNearFlippersLVertices[20] = {
+		48, 755,
+		32, 735,
+		32, 642,
+		35, 635,
+		52, 635,
+		56, 642,
+		56, 718,
+		64, 730,
+		153, 777,
+		141, 801
 	};
 	BoardNearFlippersL(ModulePhysics* physics, int _x, int _y, Module* _listener)
-		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 12), _listener, EntityType::WALL)
+		: PhysicEntity(physics->CreateChain(0, 0, boardNearFlippersLVertices, 20), _listener, EntityType::WALL)
 	{
 	}
 	void Update() override
@@ -724,6 +732,7 @@ bool ModuleGame::Start()
 	bordersTexture = LoadTexture("Assets/Borders.png");
 	leftTriangleBumper = LoadTexture("Assets/leftTriangleBumper.png");
 	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
+	sNailTexture = LoadTexture("Assets/sNail.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -1047,5 +1056,7 @@ update_status ModuleGame::Update()
 	DrawTexture(bordersTexture, 0, 0, WHITE);
 	DrawTexture(leftTriangleBumper, 82, 604, WHITE);
 	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
+	DrawTexture(sNailTexture, 244, 163, WHITE);
+	DrawTexture(sNailTexture, 302, 163, WHITE);
 	return UPDATE_CONTINUE;
 }
