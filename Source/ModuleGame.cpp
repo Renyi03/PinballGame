@@ -62,7 +62,6 @@ bool ModuleGame::Start()
 	PlayMusicStream(bgm);
 
 	bool ret = true;
-	changeGravity = false;
 
 	// Entity creation
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");

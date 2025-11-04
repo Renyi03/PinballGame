@@ -57,7 +57,7 @@ public:
 	Texture2D leftSlugTexture;
 	Texture2D controls;
 	Texture2D multiplierTexture;
-	bool changeGravity;
+	bool changeGravity = false;
 	bool bounceMode;
 	bool controlsMenu = false;
 	void CreateBall();
