@@ -262,7 +262,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 void ModuleGame::AddScore(int points)
 {
-	// Addes the score to the current score
+	// Adds the score to the current score
 	currentScore += points;
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 }
@@ -307,31 +307,29 @@ void ModuleGame::MikuCombo()
 
 update_status ModuleGame::Update()
 {
-	DrawTexture(bordersTexture, 0, 0, WHITE);
-	
-	if (!roundOver) {
+	if (!roundOver) { //checks if round is over
 		for (auto& entity : entities) {
-			Ball* ball = dynamic_cast<Ball*>(entity);
+			Ball* ball = dynamic_cast<Ball*>(entity); 
 			if (ball != nullptr) {
-				Vector2 pos = ball->GetPosition();
-				if (pos.y >= 925.0f) {
-					delete ball;  // This will automatically destroy the physics body via destructor
+				Vector2 pos = ball->GetPosition(); //gets position of ball
+				if (pos.y >= 925.0f) { //checks if position is on the bottom 
+					delete ball;  // This destroys the physics body with destructor
 					ball = nullptr;
 					entity = nullptr;
-					if (currentBall < totalBalls) {
-						entity = new Ball(App->physics, 480, 200, this, ballTexture);
-						currentBall++;
+					if (currentBall < totalBalls) { //checks if you are alowed another ball
+						entity = new Ball(App->physics, 480, 200, this, ballTexture); //gives another ball
+						currentBall++; //increases what ball you are on
 					}
 					else {
 						roundOver = true;
-						entity = new Ball(App->physics, 480, 200, this, ballTexture);
+						entity = new Ball(App->physics, 480, 200, this, ballTexture); //prepares another ball if you choose to restart game
 						break;
 					}
 
 				}
 			}
 			if (entity != nullptr)
-				entity->Update();
+				entity->Update(); //runs the updates for entities
 		}
 	}
 
@@ -445,6 +443,7 @@ update_status ModuleGame::Update()
 		}
 	}
 
+	DrawTexture(bordersTexture, 0, 0, WHITE);
 	DrawTexture(leftTriangleBumper, 82, 604, WHITE);
 	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
 	DrawTexture(sNailTexture, 244, 163, WHITE);
