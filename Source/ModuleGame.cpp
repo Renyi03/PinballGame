@@ -872,8 +872,38 @@ bool ModuleGame::Start()
 // Load assets
 bool ModuleGame::CleanUp()
 {
-	LOG("Unloading Intro scene");
+	TraceLog(LOG_INFO, "DELETING ENTITIES");
+	for (int i = 0; i < entities.size(); ++i) {
+		delete entities[i];
+		entities[i] = nullptr;
+	}
+	entities.clear();
+	TraceLog(LOG_INFO, "Deleted entities - entities.size(): %d", entities.size());
 
+	TraceLog(LOG_INFO, "UNLOADING TEXTURES");
+	UnloadTexture(ballTexture);
+	UnloadTexture(yellowBumperTexture);
+	UnloadTexture(redBumperTexture);
+	UnloadTexture(blueBumperTexture);
+	UnloadTexture(bordersTexture);
+	UnloadTexture(leftTriangleBumper);
+	UnloadTexture(rightTriangleBumper);
+	UnloadTexture(sNailTexture);
+	UnloadTexture(rightFlipperTexture);
+	UnloadTexture(leftFlipperTexture);
+	UnloadTexture(rightSlugTexture);
+	UnloadTexture(leftSlugTexture);
+
+	TraceLog(LOG_INFO, "UNLOADING AUDIO");
+	UnloadSound(bumperHit);
+	UnloadSound(flipper);
+	UnloadSound(miku);
+	UnloadSound(wallHit);
+	UnloadSound(multiplierSound);
+	UnloadSound(letterActivate);
+	UnloadMusicStream(bgm);
+
+	
 	return true;
 }
 
