@@ -53,12 +53,18 @@ public:
 	Texture2D leftTriangleBumper;
 	Texture2D rightTriangleBumper;
 	Texture2D sNailTexture;
+	Texture2D mTexture;
+	Texture2D iTexture;
+	Texture2D kTexture;
+	Texture2D uTexture;
 	Texture2D rightFlipperTexture;
 	Texture2D leftFlipperTexture;
 	Texture2D rightSlugTexture;
 	Texture2D leftSlugTexture;
+	Texture2D controls;
 	bool changeGravity;
 	bool bounceMode;
+	bool controlsMenu = false;
 	void CreateBall();
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
@@ -88,4 +94,5 @@ public:
 	Sound spring;
 	Sound wallHit;
 	Sound multiplierSound;
+	Sound letterActivate;
 };

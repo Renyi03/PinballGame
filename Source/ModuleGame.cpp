@@ -754,12 +754,22 @@ private:
 class Miku : public PhysicEntity
 {
 public:
-	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener)
-	: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 1, true)
+	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 1, true)
+		, texture(_texture)
 	{
 	}
 	void Update() override
 	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		float scale = 1.0f;
+		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
+		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
+		float rotation = body->GetRotation() * RAD2DEG;
+		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
 	}
 
 private:
@@ -779,24 +789,32 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 
-	ballTexture = LoadTexture("Assets/Turbo.png");
-	yellowBumperTexture = LoadTexture("Assets/YellowBumper.png");
-	redBumperTexture = LoadTexture("Assets/RedBumper.png");
-	blueBumperTexture = LoadTexture("Assets/BlueBumper.png");
-	bordersTexture = LoadTexture("Assets/Borders.png");
-	leftTriangleBumper = LoadTexture("Assets/leftTriangleBumper.png");
-	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
-	sNailTexture = LoadTexture("Assets/sNail.png");
-	rightFlipperTexture = LoadTexture("Assets/rightFlipper.png");
-	leftFlipperTexture = LoadTexture("Assets/leftFlipper.png");
-	rightSlugTexture = LoadTexture("Assets/rightSlug.png");
-	leftSlugTexture = LoadTexture("Assets/leftSlug.png");
+
+	ballTexture = LoadTexture("Assets/Textures/Turbo.png");
+	yellowBumperTexture = LoadTexture("Assets/Textures/YellowBumper.png");
+	redBumperTexture = LoadTexture("Assets/Textures/RedBumper.png");
+	blueBumperTexture = LoadTexture("Assets/Textures/BlueBumper.png");
+	bordersTexture = LoadTexture("Assets/Textures/Borders.png");
+	leftTriangleBumper = LoadTexture("Assets/Textures/leftTriangleBumper.png");
+	rightTriangleBumper = LoadTexture("Assets/Textures/rightTriangleBumper.png");
+	sNailTexture = LoadTexture("Assets/Textures/sNail.png");
+	rightFlipperTexture = LoadTexture("Assets/Textures/rightFlipper.png");
+	leftFlipperTexture = LoadTexture("Assets/Textures/leftFlipper.png");
+	rightSlugTexture = LoadTexture("Assets/Textures/rightSlug.png");
+	leftSlugTexture = LoadTexture("Assets/Textures/leftSlug.png");
+	controls = LoadTexture("Assets/Textures/controls_menu.png");
+	mTexture = LoadTexture("Assets/Textures/M_Sprite.png");
+	iTexture = LoadTexture("Assets/Textures/I_Sprite.png");
+	kTexture = LoadTexture("Assets/Textures/K_Sprite.png");
+	uTexture = LoadTexture("Assets/Textures/U_Sprite.png");
+
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
 	miku = LoadSound("Assets/Sounds/miku.wav");
 	wallHit = LoadSound("Assets/Sounds/wall_hit.wav");
 	multiplierSound = LoadSound("Assets/Sounds/multiplier.wav");
+	letterActivate = LoadSound("Assets/Sounds/letter_activate.wav");
 	bgm = LoadMusicStream("Assets/Sounds/bgm.wav");
 	SetMusicVolume(bgm, 0.10f);
 	PlayMusicStream(bgm);
@@ -862,6 +880,22 @@ bool ModuleGame::Start()
 	entities.emplace_back(springLauncherEntity);
 	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
 
+	M = new Miku(App->physics, 116, 541, 22, this, mTexture);
+	entities.emplace_back(M);
+	TraceLog(LOG_INFO, "Created M - entities.size(): %d", entities.size());
+
+	I = new Miku(App->physics, 280, 262, 22, this, iTexture);
+	entities.emplace_back(I);
+	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
+
+	K = new Miku(App->physics, 347, 747, 22, this, kTexture);
+	entities.emplace_back(K);
+	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
+
+	U = new Miku(App->physics, 470, 472, 22, this, uTexture);
+	entities.emplace_back(U);
+	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
+	
 	ball = new Ball(App->physics, 480, 200, this, ballTexture);
 	entities.emplace_back(ball);
 	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
@@ -877,21 +911,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(new MultiplierZone(App->physics, 138, 344, 22, this, 2));
 	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
 
-	M = new Miku(App->physics, 116, 541, 22, this);
-	entities.emplace_back(M);
-	TraceLog(LOG_INFO, "Created M - entities.size(): %d", entities.size());
 
-	I = new Miku(App->physics, 280, 262, 22, this);
-	entities.emplace_back(I);
-	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
-
-	K = new Miku(App->physics, 347, 747, 22, this);
-	entities.emplace_back(K);
-	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
-
-	U = new Miku(App->physics, 470, 472, 22, this);
-	entities.emplace_back(U);
-	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
 
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
@@ -903,8 +923,39 @@ bool ModuleGame::Start()
 // Load assets
 bool ModuleGame::CleanUp()
 {
-	LOG("Unloading Intro scene");
+	TraceLog(LOG_INFO, "DELETING ENTITIES");
+	for (int i = 0; i < entities.size(); ++i) {
+		delete entities[i];
+		entities[i] = nullptr;
+	}
+	entities.clear();
+	TraceLog(LOG_INFO, "Deleted entities - entities.size(): %d", entities.size());
 
+	TraceLog(LOG_INFO, "UNLOADING TEXTURES");
+	UnloadTexture(ballTexture);
+	UnloadTexture(yellowBumperTexture);
+	UnloadTexture(redBumperTexture);
+	UnloadTexture(blueBumperTexture);
+	UnloadTexture(bordersTexture);
+	UnloadTexture(leftTriangleBumper);
+	UnloadTexture(rightTriangleBumper);
+	UnloadTexture(sNailTexture);
+	UnloadTexture(rightFlipperTexture);
+	UnloadTexture(leftFlipperTexture);
+	UnloadTexture(rightSlugTexture);
+	UnloadTexture(leftSlugTexture);
+	UnloadTexture(controls);
+
+	TraceLog(LOG_INFO, "UNLOADING AUDIO");
+	UnloadSound(bumperHit);
+	UnloadSound(flipper);
+	UnloadSound(miku);
+	UnloadSound(wallHit);
+	UnloadSound(multiplierSound);
+	UnloadSound(letterActivate);
+	UnloadMusicStream(bgm);
+
+	
 	return true;
 }
 
@@ -931,6 +982,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			if (miku == true) {
 				// Adds to the counter to know how many sensors have been activated
 				++mikuCtr;
+				PlaySound(letterActivate);
 				// We put the boolean of the sensor in false so it can't be activated again
 				entities[i]->isMiku = false;
 				TraceLog(LOG_INFO, "Miku counter: %d", mikuCtr);
@@ -975,6 +1027,7 @@ void ModuleGame::MikuCombo()
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 	// Miku combo spawns an extra ball!
 	totalBalls++;
+	TraceLog(LOG_INFO, "New total balls: %d", totalBalls);
 	// Activates all sensors again
 	M->isMiku = true;
 	I->isMiku = true;
@@ -1050,6 +1103,7 @@ update_status ModuleGame::Update()
 		UpdateMusicStream(bgm);
 
 		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
+		DrawText(TextFormat("BALLS: %d/%d", currentBall, totalBalls), 420, 79, 20, GREEN);
 
 	/*if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
@@ -1117,5 +1171,13 @@ update_status ModuleGame::Update()
 	DrawTexture(sNailTexture, 302, 163, WHITE);
 	DrawTexture(rightSlugTexture, 347, 580, WHITE);
 	DrawTexture(leftSlugTexture, 32, 635, WHITE);
+
+	if (IsKeyPressed(KEY_H)) {
+		controlsMenu = !controlsMenu;
+	}
+	if (controlsMenu) {
+		DrawTexture(controls, 0, 0, WHITE);
+	}
+
 	return UPDATE_CONTINUE;
 }
