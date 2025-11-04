@@ -942,6 +942,14 @@ bool ModuleGame::CleanUp()
 	UnloadTexture(rightSlugTexture);
 	UnloadTexture(leftSlugTexture);
 	UnloadTexture(controls);
+	UnloadTexture(mTexture);
+	UnloadTexture(mTextureShine);
+	UnloadTexture(iTexture);
+	UnloadTexture(iTextureShine);
+	UnloadTexture(kTexture);
+	UnloadTexture(kTextureShine);
+	UnloadTexture(uTexture);
+	UnloadTexture(uTextureShine);
 
 	TraceLog(LOG_INFO, "UNLOADING AUDIO");
 	UnloadSound(bumperHit);
