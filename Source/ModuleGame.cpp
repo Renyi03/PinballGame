@@ -568,6 +568,7 @@ public:
 		b2PrismaticJoint* joint = (b2PrismaticJoint*)physics->GetWorld()->CreateJoint(&jointDef);
 		springLauncherJoint = joint;
 		body = plungerBody;
+		springTexture = LoadTexture("Assets/SpringSpriteSheet.png");
 	}
 	void Update() override
 	{
@@ -579,6 +580,32 @@ public:
 			static bool charging = false;
 			if (IsKeyDown(KEY_DOWN))
 			{
+				framesCtr++;
+				if (framesCtr > 12) {
+					framesCtr = 0;
+					if (currentXSpring == 0){
+						currentXSpring = 1;
+					}
+					else if (currentXSpring == 1) {
+						currentXSpring = 2;
+					}
+					else if (currentXSpring == 2) {
+						currentXSpring = 3;
+					}
+					else if (currentXSpring == 3) {
+						currentXSpring = 4;
+					}
+					else if (currentXSpring == 4) {
+						currentXSpring = 5;
+					}
+					else if (currentXSpring == 5) {
+						currentXSpring = 0;
+					}
+				}
+				frameRec.x = currentXSpring * 39;
+				DrawTextureRec(springTexture, frameRec, { 504, 800 }, WHITE);
+
+
 				charging = true;
 				holdTime += GetFrameTime();
 				springLauncherJoint->SetMotorSpeed(-1.0f); // Pull down
