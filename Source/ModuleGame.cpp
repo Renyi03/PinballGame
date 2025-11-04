@@ -605,35 +605,57 @@ private:
 class LeftFlipper : public PhysicEntity
 {
 public:
-	LeftFlipper(ModulePhysics* physics, int x, int y, Module* listener, b2RevoluteJoint*& joint)
+	LeftFlipper(ModulePhysics* physics, int x, int y, Module* listener, b2RevoluteJoint*& joint, Texture2D _texture)
 		: PhysicEntity(physics->CreateLeftFlipper(x, y, joint), listener, EntityType::FLIPPER, 0)
+		, texture(_texture)
 	{
 		this->joint = joint;
 	}
 
 	void Update() override
 	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		float scale = 1.0f;
+		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
+		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
+		float rotation = body->GetRotation() * RAD2DEG;
+		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
 	}
 
 private:
 	b2RevoluteJoint* joint;
+	Texture2D texture;
 };
 
 class RightFlipper : public PhysicEntity
 {
 public:
-	RightFlipper(ModulePhysics* physics, int x, int y, Module* listener, b2RevoluteJoint*& joint)
+	RightFlipper(ModulePhysics* physics, int x, int y, Module* listener, b2RevoluteJoint*& joint, Texture2D _texture)
 		: PhysicEntity(physics->CreateRightFlipper(x, y, joint), listener, EntityType::FLIPPER, 0)
+		, texture(_texture)
 	{
 		this->joint = joint;
 	}
 
 	void Update() override
 	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		float scale = 1.0f;
+		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
+		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
+		float rotation = body->GetRotation() * RAD2DEG;
+		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
 	}
 
 private:
 	b2RevoluteJoint* joint;
+	Texture2D texture;
 };
 
 class Ball : public PhysicEntity
@@ -733,6 +755,10 @@ bool ModuleGame::Start()
 	leftTriangleBumper = LoadTexture("Assets/leftTriangleBumper.png");
 	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
 	sNailTexture = LoadTexture("Assets/sNail.png");
+	rightFlipperTexture = LoadTexture("Assets/rightFlipper.png");
+	leftFlipperTexture = LoadTexture("Assets/leftFlipper.png");
+	rightSlugTexture = LoadTexture("Assets/rightSlug.png");
+	leftSlugTexture = LoadTexture("Assets/leftSlug.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -808,11 +834,11 @@ bool ModuleGame::Start()
 	entities.emplace_back(ball);
 	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
 
-	leftFlipperEntity = new LeftFlipper(App->physics, SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT - 140, this, leftJoint);
+	leftFlipperEntity = new LeftFlipper(App->physics, SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT - 140, this, leftJoint, leftFlipperTexture);
 	entities.emplace_back(leftFlipperEntity);
 	TraceLog(LOG_INFO, "Created Left Flipper - entities.size(): %d", entities.size());
 
-	rightFlipperEntity = new RightFlipper(App->physics, SCREEN_WIDTH / 2 + 65, SCREEN_HEIGHT - 140, this, rightJoint);
+	rightFlipperEntity = new RightFlipper(App->physics, SCREEN_WIDTH / 2 + 65, SCREEN_HEIGHT - 140, this, rightJoint, rightFlipperTexture);
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
@@ -1057,5 +1083,7 @@ update_status ModuleGame::Update()
 	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
 	DrawTexture(sNailTexture, 244, 163, WHITE);
 	DrawTexture(sNailTexture, 302, 163, WHITE);
+	DrawTexture(rightSlugTexture, 347, 580, WHITE);
+	DrawTexture(leftSlugTexture, 32, 635, WHITE);
 	return UPDATE_CONTINUE;
 }
