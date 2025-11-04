@@ -57,6 +57,10 @@ public:
 	Texture2D iTexture;
 	Texture2D kTexture;
 	Texture2D uTexture;
+	Texture2D mTextureShine;
+	Texture2D iTextureShine;
+	Texture2D kTextureShine;
+	Texture2D uTextureShine;
 	Texture2D rightFlipperTexture;
 	Texture2D leftFlipperTexture;
 	Texture2D rightSlugTexture;

@@ -481,7 +481,7 @@ PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
 	b2Body* plunger = world->CreateBody(&plungerDef);
 
 	b2PolygonShape plungerShape;
-	plungerShape.SetAsBox(PIXEL_TO_METERS(10), PIXEL_TO_METERS(20));
+	plungerShape.SetAsBox(PIXEL_TO_METERS(15), PIXEL_TO_METERS(20));
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &plungerShape;
@@ -491,7 +491,7 @@ PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
 
 
 	body->body = plunger;
-	body->width = 20;
+	body->width = 30;
 	body->height = 40;
 	return body;
 }
@@ -512,9 +512,6 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 
 	if (physA && physA->listener != NULL)
 		physA->listener->OnCollision(physA, physB);
-
-	if (physB && physB->listener != NULL)
-		physB->listener->OnCollision(physB, physA);
 }
 
 void PhysBody::GetPosition(int& x, int& y) const

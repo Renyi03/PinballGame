@@ -754,10 +754,14 @@ private:
 class Miku : public PhysicEntity
 {
 public:
-	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, Texture2D _texture)
+	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener,
+		Texture2D _normalTexture, Texture2D _shineTexture)
 		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 1, true)
-		, texture(_texture)
+		, normalTexture(_normalTexture)
+		, shineTexture(_shineTexture)
+		, isActivated(false)
 	{
+		currentTexture = normalTexture;  // Start with normal texture
 	}
 	void Update() override
 	{
@@ -765,15 +769,37 @@ public:
 		body->GetPhysicPosition(x, y);
 		Vector2 position{ (float)x, (float)y };
 		float scale = 1.0f;
-		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
-		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
+		Rectangle source = { 0.0f, 0.0f, (float)currentTexture.width, (float)currentTexture.height };
+		Rectangle dest = { position.x, position.y, (float)currentTexture.width * scale, (float)currentTexture.height * scale };
+		Vector2 origin = { (float)currentTexture.width / 2.0f, (float)currentTexture.height / 2.0f };
 		float rotation = body->GetRotation() * RAD2DEG;
-		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
+
+		DrawTexturePro(currentTexture, source, dest, origin, rotation, WHITE);
+	}
+
+	void Activate() {
+		if (!isActivated) {
+			currentTexture = shineTexture;
+			isActivated = true;
+			TraceLog(LOG_INFO, "Changing Miku texture to shine");
+		}
+	}
+
+	// Reset to normal texture
+	void Deactivate() {
+		currentTexture = normalTexture;
+		isActivated = false;
+	}
+
+	bool GetIsActivated() {
+		return isActivated;
 	}
 
 private:
-	Texture2D texture;
+	Texture2D normalTexture;   // Normal texture
+	Texture2D shineTexture;    // Shine texture that displays when the ball touches the sensor
+	Texture2D currentTexture;  // Currently displayed texture
+	bool isActivated;
 };
 
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -807,7 +833,10 @@ bool ModuleGame::Start()
 	iTexture = LoadTexture("Assets/Textures/I_Sprite.png");
 	kTexture = LoadTexture("Assets/Textures/K_Sprite.png");
 	uTexture = LoadTexture("Assets/Textures/U_Sprite.png");
-
+	mTextureShine = LoadTexture("Assets/Textures/M_ShineSprite.png");
+	iTextureShine = LoadTexture("Assets/Textures/I_ShineSprite.png");
+	kTextureShine = LoadTexture("Assets/Textures/K_ShineSprite.png");
+	uTextureShine = LoadTexture("Assets/Textures/U_ShineSprite.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -880,22 +909,22 @@ bool ModuleGame::Start()
 	entities.emplace_back(springLauncherEntity);
 	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
 
-	M = new Miku(App->physics, 116, 541, 22, this, mTexture);
+	M = new Miku(App->physics, 116, 541, 22, this, mTexture, mTextureShine);
 	entities.emplace_back(M);
 	TraceLog(LOG_INFO, "Created M - entities.size(): %d", entities.size());
 
-	I = new Miku(App->physics, 280, 262, 22, this, iTexture);
+	I = new Miku(App->physics, 280, 262, 22, this, iTexture, iTextureShine);
 	entities.emplace_back(I);
 	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
 
-	K = new Miku(App->physics, 347, 747, 22, this, kTexture);
+	K = new Miku(App->physics, 347, 747, 22, this, kTexture, kTextureShine);
 	entities.emplace_back(K);
 	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
 
-	U = new Miku(App->physics, 470, 472, 22, this, uTexture);
+	U = new Miku(App->physics, 470, 472, 22, this, uTexture, uTextureShine);
 	entities.emplace_back(U);
 	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
-	
+
 	ball = new Ball(App->physics, 480, 200, this, ballTexture);
 	entities.emplace_back(ball);
 	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
@@ -945,6 +974,14 @@ bool ModuleGame::CleanUp()
 	UnloadTexture(rightSlugTexture);
 	UnloadTexture(leftSlugTexture);
 	UnloadTexture(controls);
+	UnloadTexture(mTexture);
+	UnloadTexture(mTextureShine);
+	UnloadTexture(iTexture);
+	UnloadTexture(iTextureShine);
+	UnloadTexture(kTexture);
+	UnloadTexture(kTextureShine);
+	UnloadTexture(uTexture);
+	UnloadTexture(uTextureShine);
 
 	TraceLog(LOG_INFO, "UNLOADING AUDIO");
 	UnloadSound(bumperHit);
@@ -983,6 +1020,11 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				// Adds to the counter to know how many sensors have been activated
 				++mikuCtr;
 				PlaySound(letterActivate);
+				// Change the texture to shine version
+				Miku* mikuLetter = dynamic_cast<Miku*>(entities[i]);
+				if (mikuLetter != nullptr) {
+					mikuLetter->Activate();
+				}
 				// We put the boolean of the sensor in false so it can't be activated again
 				entities[i]->isMiku = false;
 				TraceLog(LOG_INFO, "Miku counter: %d", mikuCtr);
@@ -1030,9 +1072,16 @@ void ModuleGame::MikuCombo()
 	TraceLog(LOG_INFO, "New total balls: %d", totalBalls);
 	// Activates all sensors again
 	M->isMiku = true;
+	M->Deactivate();  // Reset to normal texture
+
 	I->isMiku = true;
+	I->Deactivate();
+
 	K->isMiku = true;
+	K->Deactivate();
+
 	U->isMiku = true;
+	U->Deactivate();
 	// Resets Miku Counter
 	mikuCtr = 0;
 	TraceLog(LOG_INFO, "Miku combo reset");
@@ -1072,6 +1121,21 @@ update_status ModuleGame::Update()
 		if (currentScore > highestScore) {
 			highestScore = currentScore;
 		}
+
+		// Activates all sensors again
+		M->isMiku = true;
+		M->Deactivate();  // Reset to normal texture
+
+		I->isMiku = true;
+		I->Deactivate();
+
+		K->isMiku = true;
+		K->Deactivate();
+
+		U->isMiku = true;
+		U->Deactivate();
+		// Resets Miku Counter
+		mikuCtr = 0;
 
 		// Dark overlay
 		DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.6f));
