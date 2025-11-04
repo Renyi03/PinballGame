@@ -917,6 +917,7 @@ void ModuleGame::MikuCombo()
 	TraceLog(LOG_INFO, "Current Score: %d", currentScore);
 	// Miku combo spawns an extra ball!
 	totalBalls++;
+	TraceLog(LOG_INFO, "New total balls: %d", totalBalls);
 	// Activates all sensors again
 	M->isMiku = true;
 	I->isMiku = true;
@@ -992,6 +993,7 @@ update_status ModuleGame::Update()
 		UpdateMusicStream(bgm);
 
 		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
+		DrawText(TextFormat("BALLS: %d/%d", currentBall, totalBalls), 420, 79, 20, GREEN);
 
 	/*if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
