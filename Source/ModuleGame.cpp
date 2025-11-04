@@ -17,7 +17,6 @@ class MultiplierZone : public PhysicEntity
 public:
 	MultiplierZone(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, int _multiplier)
 		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 2) 
-		// Even though it says that the multiplier is 2, since the sensor detects the ball twice, it's going to be 4
 		, multiplier(_multiplier)
 	{
 	}
