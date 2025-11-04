@@ -759,6 +759,7 @@ bool ModuleGame::Start()
 	leftFlipperTexture = LoadTexture("Assets/leftFlipper.png");
 	rightSlugTexture = LoadTexture("Assets/rightSlug.png");
 	leftSlugTexture = LoadTexture("Assets/leftSlug.png");
+	controls = LoadTexture("Assets/controls_menu.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -1089,5 +1090,13 @@ update_status ModuleGame::Update()
 	DrawTexture(sNailTexture, 302, 163, WHITE);
 	DrawTexture(rightSlugTexture, 347, 580, WHITE);
 	DrawTexture(leftSlugTexture, 32, 635, WHITE);
+
+	if (IsKeyPressed(KEY_H)) {
+		controlsMenu = !controlsMenu;
+	}
+	if (controlsMenu) {
+		DrawTexture(controls, 0, 0, WHITE);
+	}
+
 	return UPDATE_CONTINUE;
 }

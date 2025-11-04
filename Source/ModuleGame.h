@@ -57,8 +57,10 @@ public:
 	Texture2D leftFlipperTexture;
 	Texture2D rightSlugTexture;
 	Texture2D leftSlugTexture;
+	Texture2D controls;
 	bool changeGravity;
 	bool bounceMode;
+	bool controlsMenu = false;
 	void CreateBall();
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
