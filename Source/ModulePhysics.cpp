@@ -446,7 +446,30 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
 	}
 
-	shape.CreateLoop(p, size / 2);
+	//was getting error: 
+	//shape.CreateLoop(p, size / 2);
+
+	//error fix:
+	// checks if two points are too close together
+	std::vector<b2Vec2> cleanPoints;
+	cleanPoints.reserve(size / 2);
+
+	for (int i = 0; i < size / 2; ++i)
+	{
+		b2Vec2 v = p[i];
+
+		if (cleanPoints.empty() || b2DistanceSquared(v, cleanPoints.back()) > 0.000001f)
+		{
+			cleanPoints.push_back(v);
+		}
+	}
+
+	// if there are more than 3 good points it creates loop
+	if (cleanPoints.size() >= 3)
+	{
+		shape.CreateLoop(cleanPoints.data(), static_cast<int32>(cleanPoints.size()));
+	}
+	
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
@@ -481,7 +504,7 @@ PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
 	b2Body* plunger = world->CreateBody(&plungerDef);
 
 	b2PolygonShape plungerShape;
-	plungerShape.SetAsBox(PIXEL_TO_METERS(10), PIXEL_TO_METERS(20));
+	plungerShape.SetAsBox(PIXEL_TO_METERS(15), PIXEL_TO_METERS(20));
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &plungerShape;
@@ -491,7 +514,7 @@ PhysBody* ModulePhysics::CreateSpringLauncher(int x, int y, b2Body*& outBase) {
 
 
 	body->body = plunger;
-	body->width = 20;
+	body->width = 30;
 	body->height = 40;
 	return body;
 }
@@ -512,9 +535,6 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 
 	if (physA && physA->listener != NULL)
 		physA->listener->OnCollision(physA, physB);
-
-	if (physB && physB->listener != NULL)
-		physB->listener->OnCollision(physB, physA);
 }
 
 void PhysBody::GetPosition(int& x, int& y) const

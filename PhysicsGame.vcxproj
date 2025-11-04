@@ -188,7 +188,15 @@
     <ClInclude Include="Source/ModuleRender.h" />
     <ClInclude Include="Source/ModuleWindow.h" />
     <ClInclude Include="Source/p2Point.h" />
+    <ClInclude Include="Source\Ball.h" />
+    <ClInclude Include="Source\Board.h" />
+    <ClInclude Include="Source\Bumper.h" />
+    <ClInclude Include="Source\Flipper.h" />
+    <ClInclude Include="Source\Launcher.h" />
+    <ClInclude Include="Source\Miku.h" />
     <ClInclude Include="Source\ModuleGame.h" />
+    <ClInclude Include="Source\Multiplier.h" />
+    <ClInclude Include="Source\PhysicEntity.h" />
     <ClInclude Include="Source\Timer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -199,7 +207,14 @@
     <ClCompile Include="Source/ModulePhysics.cpp" />
     <ClCompile Include="Source/ModuleRender.cpp" />
     <ClCompile Include="Source/ModuleWindow.cpp" />
+    <ClCompile Include="Source\Ball.cpp" />
+    <ClCompile Include="Source\Board.cpp" />
+    <ClCompile Include="Source\Bumper.cpp" />
+    <ClCompile Include="Source\Flipper.cpp" />
+    <ClCompile Include="Source\Launcher.cpp" />
+    <ClCompile Include="Source\Miku.cpp" />
     <ClCompile Include="Source\ModuleGame.cpp" />
+    <ClCompile Include="Source\Multiplier.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

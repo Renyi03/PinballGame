@@ -19,16 +19,6 @@ class LeftFlipper;
 class RightFlipper;
 class Miku;
 
-enum class EntityType {
-	DEFAULT,
-	BALL,
-	BUMPER,
-	FLIPPER,
-	SPRING,
-	MULTIPLIER,
-	WALL
-};
-
 class ModuleGame : public Module
 {
 public:
@@ -57,12 +47,19 @@ public:
 	Texture2D iTexture;
 	Texture2D kTexture;
 	Texture2D uTexture;
+	Texture2D mTextureShine;
+	Texture2D iTextureShine;
+	Texture2D kTextureShine;
+	Texture2D uTextureShine;
 	Texture2D rightFlipperTexture;
 	Texture2D leftFlipperTexture;
 	Texture2D rightSlugTexture;
 	Texture2D leftSlugTexture;
+	Texture2D controls;
+	Texture2D multiplierTexture;
 	bool changeGravity;
 	bool bounceMode;
+	bool controlsMenu = false;
 	void CreateBall();
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
@@ -92,4 +89,5 @@ public:
 	Sound spring;
 	Sound wallHit;
 	Sound multiplierSound;
+	Sound letterActivate;
 };
