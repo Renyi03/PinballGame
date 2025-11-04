@@ -450,25 +450,23 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
 	}
 
-	//was getting error: 
-	//shape.CreateLoop(p, size / 2);
-
-	//error fix:
-	// checks if two points are too close together
+	// checks if two points are too close together or the same
 	std::vector<b2Vec2> cleanPoints;
 	cleanPoints.reserve(size / 2);
 
 	for (int i = 0; i < size / 2; ++i)
 	{
+		//goes through points
 		b2Vec2 v = p[i];
 
+		//checks the points and stores them in clean points so no repeats
 		if (cleanPoints.empty() || b2DistanceSquared(v, cleanPoints.back()) > 0.000001f)
 		{
 			cleanPoints.push_back(v);
 		}
 	}
 
-	// if there are more than 3 good points it creates loop
+	// if there are more than 3 good points it creates loop (needs 3 for box2D)
 	if (cleanPoints.size() >= 3)
 	{
 		shape.CreateLoop(cleanPoints.data(), static_cast<int32>(cleanPoints.size()));
@@ -615,13 +613,13 @@ void ModulePhysics::DestroyBody(PhysBody* pbody)
 	if (pbody == nullptr || pbody->body == nullptr || world == nullptr)
 		return;
 
-	// Destroy the Box2D body safely
+	// destroys the Box2D body
 	if (pbody->body != nullptr) {
 		world->DestroyBody(pbody->body);
 		pbody->body = nullptr;
 	}
 
 
-	// Free the PhysBody wrapper itself
+	// frees the phys body
 	delete pbody;
 }

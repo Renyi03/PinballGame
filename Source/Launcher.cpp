@@ -29,8 +29,7 @@ SpringLauncherEntity::SpringLauncherEntity(ModulePhysics* physics, int x, int y,
 }
 void SpringLauncherEntity::Update()
 {
-	//we can more this code if needed. but this code is to detect how long player is holding down key to influence spring power
-//and launching ball once key is released
+	//detects how long player is holding down key to influence spring power, and launches ball once key is released
 
 	if (springLauncherJoint != nullptr)
 	{
