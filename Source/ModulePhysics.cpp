@@ -38,6 +38,7 @@ update_status ModulePhysics::PreUpdate()
 {
 	float deltaTime = GetFrameTime();
 
+	// Caps the framerate
 	if (GetFPS() == 60) {
 		if (deltaTime > 1.0f / 60.0f)
 			deltaTime = 1.0f / 60.0f;
@@ -146,6 +147,7 @@ update_status ModulePhysics::PostUpdate()
 			}			
 		}
 	}
+	// Creates a mouse joint
 	if (selected) {
 		b2MouseJointDef def;
 		def.bodyA = ground;
@@ -157,11 +159,13 @@ update_status ModulePhysics::PostUpdate()
 		mouse_joint = (b2MouseJoint*)world->CreateJoint(&def);
 
 	}
+	// Line that connects mouse joint with ball
 	else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && mouse_joint) {
 		mouse_joint->SetTarget(mousePhysicalPosition);
 		auto physicalPosition = mouse_joint->GetBodyB()->GetPosition();
 		DrawLine(mouseScreenPosition.x, mouseScreenPosition.y, METERS_TO_PIXELS(physicalPosition.x), METERS_TO_PIXELS(physicalPosition.y), RED);
 	}
+	// Destroys the mouse joint when releasing the left mouse button
 	else if (!IsMouseButtonDown(MOUSE_BUTTON_LEFT) && mouse_joint) {
 		world->DestroyJoint(mouse_joint);
 		mouse_joint = nullptr;
@@ -175,9 +179,9 @@ update_status ModulePhysics::PostUpdate()
 bool ModulePhysics::CleanUp()
 {
 	LOG("Destroying physics world");
-
 	// Delete the whole physics world!
 
+	delete world;
 
 	return true;
 }

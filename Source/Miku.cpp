@@ -9,7 +9,7 @@ Miku::Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listene
 	, shineTexture(_shineTexture)
 	, isActivated(false)
 {
-	currentTexture = normalTexture;  // Start with normal texture
+	currentTexture = normalTexture;  // Starts with normal texture
 }
 void Miku::Update() 
 {
@@ -33,7 +33,7 @@ void Miku::Activate() {
 	}
 }
 
-// Reset to normal texture
+// Resets to normal texture
 void Miku::Deactivate() {
 	currentTexture = normalTexture;
 	isActivated = false;

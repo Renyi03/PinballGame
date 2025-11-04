@@ -26,7 +26,7 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 
-
+	// Loading all the textures
 	ballTexture = LoadTexture("Assets/Textures/Turbo.png");
 	yellowBumperTexture = LoadTexture("Assets/Textures/YellowBumper.png");
 	redBumperTexture = LoadTexture("Assets/Textures/RedBumper.png");
@@ -50,6 +50,7 @@ bool ModuleGame::Start()
 	uTextureShine = LoadTexture("Assets/Textures/U_ShineSprite.png");
 	multiplierTexture = LoadTexture("Assets/Textures/Multiplier.png");
 
+	// Loading all the sounds and music
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
 	miku = LoadSound("Assets/Sounds/miku.wav");
@@ -63,6 +64,7 @@ bool ModuleGame::Start()
 	bool ret = true;
 	changeGravity = false;
 
+	// Entity creation
 	TraceLog(LOG_INFO, "=== Starting entity creation ===");
 	TraceLog(LOG_INFO, "entities.size() before: %d", entities.size());
 	entities.emplace_back(new Board(App->physics, 0, 0, this));
@@ -160,9 +162,9 @@ bool ModuleGame::Start()
 	return ret;
 }
 
-// Load assets
 bool ModuleGame::CleanUp()
 {
+	// Deleting the entities
 	TraceLog(LOG_INFO, "DELETING ENTITIES");
 	for (int i = 0; i < entities.size(); ++i) {
 		delete entities[i];
@@ -171,6 +173,7 @@ bool ModuleGame::CleanUp()
 	entities.clear();
 	TraceLog(LOG_INFO, "Deleted entities - entities.size(): %d", entities.size());
 
+	// Unloading textures
 	TraceLog(LOG_INFO, "UNLOADING TEXTURES");
 	UnloadTexture(ballTexture);
 	UnloadTexture(yellowBumperTexture);
@@ -195,6 +198,7 @@ bool ModuleGame::CleanUp()
 	UnloadTexture(uTextureShine);
 	UnloadTexture(multiplierTexture);
 
+	// Unloading sounds and music
 	TraceLog(LOG_INFO, "UNLOADING AUDIO");
 	UnloadSound(bumperHit);
 	UnloadSound(flipper);
@@ -245,6 +249,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					MikuCombo();
 				}
 			}
+			// Plays sounds according to the entity type
 			if (entities[i]->GetEntityType() == EntityType::BUMPER) {
 				PlaySound(bumperHit);
 			}
@@ -299,7 +304,7 @@ void ModuleGame::MikuCombo()
 	TraceLog(LOG_INFO, "Miku combo reset");
 }
 
-// Update: draw background
+
 update_status ModuleGame::Update()
 {
 	if (!roundOver) {
@@ -329,9 +334,9 @@ update_status ModuleGame::Update()
 	}
 
 	if (roundOver) {
-		totalBalls = 3;
+		totalBalls = 3; // Resets the total balls amount in case Miku Combo was achieved in the previous round
 		if (currentScore > highestScore) {
-			highestScore = currentScore;
+			highestScore = currentScore; // Updates highest score
 		}
 
 		// Activates all sensors again
@@ -381,9 +386,7 @@ update_status ModuleGame::Update()
 		DrawText(TextFormat("SCORE: %d", currentScore), 200, 10, 30, GREEN);
 		DrawText(TextFormat("BALLS: %d/%d", currentBall, totalBalls), 420, 79, 20, GREEN);
 
-	/*if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		entities.emplace_back(new Ball(App->physics, GetMouseX(), GetMouseY(), this, ballTexture));
-	}*/
+		// Flipper controls and sounds
 	if (IsKeyDown(KEY_LEFT)) {
 		if (flipperSound == true) {
 			PlaySound(flipper);
@@ -448,6 +451,7 @@ update_status ModuleGame::Update()
 	DrawTexture(rightSlugTexture, 347, 580, WHITE);
 	DrawTexture(leftSlugTexture, 32, 635, WHITE);
 
+	// Shows the controls
 	if (IsKeyPressed(KEY_H)) {
 		controlsMenu = !controlsMenu;
 	}
