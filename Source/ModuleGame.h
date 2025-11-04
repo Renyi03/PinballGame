@@ -66,6 +66,7 @@ public:
 	Texture2D rightSlugTexture;
 	Texture2D leftSlugTexture;
 	Texture2D controls;
+	Texture2D multiplierTexture;
 	bool changeGravity;
 	bool bounceMode;
 	bool controlsMenu = false;
