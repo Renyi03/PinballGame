@@ -68,7 +68,8 @@ update_status ModulePhysics::PostUpdate()
 	b2Vec2 mousePhysicalPosition = { PIXEL_TO_METERS(mouseScreenPosition.x), PIXEL_TO_METERS(mouseScreenPosition.y) };
 	b2Body* selected = nullptr;
 
-	// Bonus code: this will iterate all objects in the world and draw the circles
+	// Bonus code: this will iterate all objects in the world and 
+	// the circles
 	// You need to provide your own macro to translate meters to pixels
 	for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
 	{

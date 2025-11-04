@@ -57,6 +57,10 @@ public:
 	Texture2D leftFlipperTexture;
 	Texture2D rightSlugTexture;
 	Texture2D leftSlugTexture;
+	Texture2D mTexture;
+	Texture2D iTexture;
+	Texture2D kTexture;
+	Texture2D uTexture;
 	bool changeGravity;
 	bool bounceMode;
 	void CreateBall();

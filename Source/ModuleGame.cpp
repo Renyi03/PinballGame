@@ -722,12 +722,22 @@ private:
 class Miku : public PhysicEntity
 {
 public:
-	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener)
-	: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 1, true)
+	Miku(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 1, true)
+		, texture(_texture)
 	{
 	}
 	void Update() override
 	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		float scale = 1.0f;
+		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
+		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f };
+		float rotation = body->GetRotation() * RAD2DEG;
+		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
 	}
 
 private:
@@ -759,6 +769,10 @@ bool ModuleGame::Start()
 	leftFlipperTexture = LoadTexture("Assets/leftFlipper.png");
 	rightSlugTexture = LoadTexture("Assets/rightSlug.png");
 	leftSlugTexture = LoadTexture("Assets/leftSlug.png");
+	mTexture = LoadTexture("Assets/M_Sprite.png");
+	iTexture = LoadTexture("Assets/I_Sprite.png");
+	kTexture = LoadTexture("Assets/K_Sprite.png");
+	uTexture = LoadTexture("Assets/U_Sprite.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -830,6 +844,22 @@ bool ModuleGame::Start()
 	entities.emplace_back(springLauncherEntity);
 	TraceLog(LOG_INFO, "Created Board Spring- entities.size(): %d", entities.size());
 
+	M = new Miku(App->physics, 116, 541, 22, this, mTexture);
+	entities.emplace_back(M);
+	TraceLog(LOG_INFO, "Created M - entities.size(): %d", entities.size());
+
+	I = new Miku(App->physics, 280, 262, 22, this, iTexture);
+	entities.emplace_back(I);
+	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
+
+	K = new Miku(App->physics, 347, 747, 22, this, kTexture);
+	entities.emplace_back(K);
+	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
+
+	U = new Miku(App->physics, 470, 472, 22, this, uTexture);
+	entities.emplace_back(U);
+	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
+	
 	ball = new Ball(App->physics, 480, 200, this, ballTexture);
 	entities.emplace_back(ball);
 	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
@@ -845,21 +875,7 @@ bool ModuleGame::Start()
 	entities.emplace_back(new MultiplierZone(App->physics, 138, 344, 22, this, 2));
 	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
 
-	M = new Miku(App->physics, 116, 541, 22, this);
-	entities.emplace_back(M);
-	TraceLog(LOG_INFO, "Created M - entities.size(): %d", entities.size());
 
-	I = new Miku(App->physics, 280, 262, 22, this);
-	entities.emplace_back(I);
-	TraceLog(LOG_INFO, "Created I - entities.size(): %d", entities.size());
-
-	K = new Miku(App->physics, 347, 747, 22, this);
-	entities.emplace_back(K);
-	TraceLog(LOG_INFO, "Created K - entities.size(): %d", entities.size());
-
-	U = new Miku(App->physics, 470, 472, 22, this);
-	entities.emplace_back(U);
-	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
 
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
 	TraceLog(LOG_INFO, "Total entities: %d", entities.size());
