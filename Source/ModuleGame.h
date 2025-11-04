@@ -34,7 +34,8 @@ public:
 	void MikuCombo();
 
 public:
-	std::vector<PhysicEntity*> entities;
+	std::vector<PhysicEntity*> entities; //Vector where all the entities will be stored
+	//Variables defining the textures
 	Texture2D ballTexture;
 	Texture2D yellowBumperTexture;
 	Texture2D redBumperTexture;
@@ -57,10 +58,12 @@ public:
 	Texture2D leftSlugTexture;
 	Texture2D controls;
 	Texture2D multiplierTexture;
+
 	bool changeGravity = false;
-	bool bounceMode;
+	bool bounceMode = false;
 	bool controlsMenu = false;
 	void CreateBall();
+
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
 	Ball* ball;
@@ -68,10 +71,12 @@ public:
 	SpringLauncherEntity* springLauncherEntity;
 	LeftFlipper* leftFlipperEntity;
 	RightFlipper* rightFlipperEntity;
+
 	Miku* M;
 	Miku* I;
 	Miku* K;
 	Miku* U;
+
 	int currentScore = 0;
 	int scoreMultiplier = 1;
 	int previousScore = 0;
@@ -81,7 +86,9 @@ public:
 	bool roundOver = false; // To prevent respawning after the last ball
 	bool isMultiplied = false;
 	bool flipperSound = true;
-	int mikuCtr = 0;
+	int mikuCtr = 0; //The amount of "Miku sensors" that the player has activated with the ball
+
+	//Variables defining the music and sounds
 	Music bgm;
 	Sound bumperHit;
 	Sound flipper;

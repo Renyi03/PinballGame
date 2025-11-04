@@ -410,15 +410,15 @@ update_status ModuleGame::Update()
 	}
 
 	if (IsKeyPressed(KEY_G)) {
-		b2Vec2 currentGravity = App->physics->world->GetGravity();
+		b2Vec2 currentGravity = App->physics->world->GetGravity(); //Get the current gravity to then modify it and set the world gravity to that modified value
 		changeGravity = !changeGravity;
 
-		if (changeGravity) {
+		if (changeGravity) { //If changeGravity is activated, the world gravity in the y axis will be set to -3
 			currentGravity.y = -3.0f;
 			App->physics->world->SetGravity(currentGravity);
 			TraceLog(LOG_INFO, "Current gravity Y = %d", currentGravity.y);
 		}
-		else {
+		else { // Is it is desactivated, it will return to the original gravity
 			currentGravity.y = -GRAVITY_Y;
 			App->physics->world->SetGravity(currentGravity);
 			TraceLog(LOG_INFO, "Current gravity Y = %d", currentGravity.y);
@@ -428,11 +428,11 @@ update_status ModuleGame::Update()
 	if (IsKeyPressed(KEY_B)) {
 		bounceMode = !bounceMode;
 
-		if (bounceMode) {
+		if (bounceMode) { //If bounceMode is activated, the restitution of the ball will be modified to 0.4
 			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.4f);
 			TraceLog(LOG_INFO, "Bounce mode activated");
 		}
-		else {
+		else { //If it is desactivated, it will return to the original value: 0.1
 			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
 
 			TraceLog(LOG_INFO, "Bounce mode activated");

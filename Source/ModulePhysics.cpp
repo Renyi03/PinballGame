@@ -223,14 +223,17 @@ PhysBody* ModulePhysics::CreateCircularBumper(int x, int y, int radius) {
 
 PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 {
+	// Create Bumper BODY at position x,y
 	PhysBody* pbody = new PhysBody();
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
+	// Add BODY to the world
 	b2Body* b = world->CreateBody(&body);
 
+	// Create Bumper SHAPE
 	b2ChainShape bumpershape;
 	b2Vec2* p = new b2Vec2[size / 2];
 
@@ -242,6 +245,7 @@ PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 
 	bumpershape.CreateLoop(p, size / 2);
 
+	// Create Bumper FIXTURE
 	b2FixtureDef fixture;
 	fixture.shape = &bumpershape;
 	fixture.density = 1.0f;
@@ -251,11 +255,12 @@ PhysBody* ModulePhysics::CreateBumper(int x, int y, const int* points, int size)
 
 	delete p;
 
-
+	// Create our custom PhysBody class
 	pbody->body = b;
 
 	pbody->width = pbody->height = 0;
 
+	// Return our PhysBody class
 	return pbody;
 }
 
