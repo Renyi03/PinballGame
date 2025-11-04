@@ -66,6 +66,7 @@ bool ModuleGame::Start()
 	iTextureShine = LoadTexture("Assets/Textures/I_ShineSprite.png");
 	kTextureShine = LoadTexture("Assets/Textures/K_ShineSprite.png");
 	uTextureShine = LoadTexture("Assets/Textures/U_ShineSprite.png");
+	multiplierTexture = LoadTexture("Assets/Textures/Multiplier.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -211,6 +212,7 @@ bool ModuleGame::CleanUp()
 	UnloadTexture(kTextureShine);
 	UnloadTexture(uTexture);
 	UnloadTexture(uTextureShine);
+	UnloadTexture(multiplierTexture);
 
 	TraceLog(LOG_INFO, "UNLOADING AUDIO");
 	UnloadSound(bumperHit);
@@ -464,6 +466,7 @@ update_status ModuleGame::Update()
 	DrawTexture(sNailTexture, 302, 163, WHITE);
 	DrawTexture(rightSlugTexture, 347, 580, WHITE);
 	DrawTexture(leftSlugTexture, 32, 635, WHITE);
+	DrawTexture(multiplierTexture, 138, 344, WHITE);
 
 	if (IsKeyPressed(KEY_H)) {
 		controlsMenu = !controlsMenu;
