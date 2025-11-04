@@ -57,7 +57,6 @@ public:
 	Texture2D leftFlipperTexture;
 	Texture2D rightSlugTexture;
 	Texture2D leftSlugTexture;
-	Texture2D springTexture;
 	bool changeGravity;
 	bool bounceMode;
 	void CreateBall();
@@ -72,9 +71,6 @@ public:
 	Miku* I;
 	Miku* K;
 	Miku* U;
-	int framesCtr = 0;
-	int currentXSpring = 0;
-	Vector2 frameRec;
 	int currentScore = 0;
 	int scoreMultiplier = 1;
 	int previousScore = 0;

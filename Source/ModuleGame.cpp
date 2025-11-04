@@ -568,12 +568,14 @@ public:
 		b2PrismaticJoint* joint = (b2PrismaticJoint*)physics->GetWorld()->CreateJoint(&jointDef);
 		springLauncherJoint = joint;
 		body = plungerBody;
+
 		springTexture = LoadTexture("Assets/SpringSpriteSheet.png");
 	}
 	void Update() override
 	{
 		//we can more this code if needed. but this code is to detect how long player is holding down key to influence spring power
 	//and launching ball once key is released
+		
 		if (springLauncherJoint != nullptr)
 		{
 			static float holdTime = 0.0f;
@@ -581,7 +583,7 @@ public:
 			if (IsKeyDown(KEY_DOWN))
 			{
 				framesCtr++;
-				if (framesCtr > 12) {
+				if (framesCtr > 24) {
 					framesCtr = 0;
 					if (currentXSpring == 0){
 						currentXSpring = 1;
@@ -595,12 +597,6 @@ public:
 					else if (currentXSpring == 3) {
 						currentXSpring = 4;
 					}
-					else if (currentXSpring == 4) {
-						currentXSpring = 5;
-					}
-					else if (currentXSpring == 5) {
-						currentXSpring = 0;
-					}
 				}
 				frameRec.x = currentXSpring * 39;
 				DrawTextureRec(springTexture, frameRec, { 504, 800 }, WHITE);
@@ -612,6 +608,7 @@ public:
 			}
 			else if (charging && IsKeyReleased(KEY_DOWN))
 			{
+				currentXSpring = 0;
 				charging = false;
 				float power = std::min(holdTime * 25.0f, 60.0f);
 				//^^25 is conversion factor from seconds to whatever box2D uses, and 60 is like the max cap of how long you hold
@@ -619,11 +616,19 @@ public:
 				springLauncherJoint->SetMotorSpeed(power); // Launch
 				PlaySound(spring);
 			}
+			else {
+				currentXSpring = 0;
+				frameRec.x = currentXSpring * 39;
+				DrawTextureRec(springTexture, frameRec, { 504, 800 }, WHITE);
+			}
 		}
 
 	}
 private:
-	Texture2D texture;
+	Texture2D springTexture = LoadTexture("Assets/Textures/SpringSpriteSheet.png");
+	int framesCtr;
+	int currentXSpring = 0;
+	Rectangle frameRec{ 0, 0, 39, 139 };
 	b2PrismaticJoint* springLauncherJoint = nullptr;
 	b2Body* springPlungerBody = nullptr;
 	Sound spring = LoadSound("Assets/Sounds/spring.wav");
