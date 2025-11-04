@@ -429,17 +429,24 @@ update_status ModuleGame::Update()
 	if (IsKeyPressed(KEY_B)) {
 		bounceMode = !bounceMode;
 
+		// Apply bounce mode to all active balls
+		for (auto& entity : entities) {
+			Ball* currentBall = dynamic_cast<Ball*>(entity);
+			if (currentBall != nullptr && currentBall->GetBody() != nullptr) {
+				if (bounceMode) {
+					currentBall->GetBody()->body->GetFixtureList()->SetRestitution(0.4f);
+				}
+				else {
+					currentBall->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
+				}
+			}
+		}
+
 		if (bounceMode) {
-			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.4f);
 			TraceLog(LOG_INFO, "Bounce mode activated");
 		}
 		else {
-			ball->GetBody()->body->GetFixtureList()->SetRestitution(0.1f);
-
-			TraceLog(LOG_INFO, "Bounce mode activated");
-
 			TraceLog(LOG_INFO, "Bounce mode deactivated");
-
 		}
 	}
 
