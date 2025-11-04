@@ -53,6 +53,10 @@ public:
 	Texture2D leftTriangleBumper;
 	Texture2D rightTriangleBumper;
 	Texture2D sNailTexture;
+	Texture2D mTexture;
+	Texture2D iTexture;
+	Texture2D kTexture;
+	Texture2D uTexture;
 	Texture2D rightFlipperTexture;
 	Texture2D leftFlipperTexture;
 	Texture2D rightSlugTexture;
