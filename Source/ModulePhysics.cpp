@@ -446,7 +446,30 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
 	}
 
-	shape.CreateLoop(p, size / 2);
+	//was getting error: 
+	//shape.CreateLoop(p, size / 2);
+
+	//error fix:
+	// checks if two points are too close together
+	std::vector<b2Vec2> cleanPoints;
+	cleanPoints.reserve(size / 2);
+
+	for (int i = 0; i < size / 2; ++i)
+	{
+		b2Vec2 v = p[i];
+
+		if (cleanPoints.empty() || b2DistanceSquared(v, cleanPoints.back()) > 0.000001f)
+		{
+			cleanPoints.push_back(v);
+		}
+	}
+
+	// if there are more than 3 good points it creates loop
+	if (cleanPoints.size() >= 3)
+	{
+		shape.CreateLoop(cleanPoints.data(), static_cast<int32>(cleanPoints.size()));
+	}
+	
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;

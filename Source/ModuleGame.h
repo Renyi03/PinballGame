@@ -19,16 +19,6 @@ class LeftFlipper;
 class RightFlipper;
 class Miku;
 
-enum class EntityType {
-	DEFAULT,
-	BALL,
-	BUMPER,
-	FLIPPER,
-	SPRING,
-	MULTIPLIER,
-	WALL
-};
-
 class ModuleGame : public Module
 {
 public:
