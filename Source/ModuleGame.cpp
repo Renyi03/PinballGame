@@ -1082,6 +1082,21 @@ update_status ModuleGame::Update()
 			highestScore = currentScore;
 		}
 
+		// Activates all sensors again
+		M->isMiku = true;
+		M->Deactivate();  // Reset to normal texture
+
+		I->isMiku = true;
+		I->Deactivate();
+
+		K->isMiku = true;
+		K->Deactivate();
+
+		U->isMiku = true;
+		U->Deactivate();
+		// Resets Miku Counter
+		mikuCtr = 0;
+
 		// Dark overlay
 		DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.6f));
 

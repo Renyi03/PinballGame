@@ -512,9 +512,6 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 
 	if (physA && physA->listener != NULL)
 		physA->listener->OnCollision(physA, physB);
-
-	if (physB && physB->listener != NULL)
-		physB->listener->OnCollision(physB, physA);
 }
 
 void PhysBody::GetPosition(int& x, int& y) const
