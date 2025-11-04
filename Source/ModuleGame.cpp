@@ -747,19 +747,19 @@ bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 
-	ballTexture = LoadTexture("Assets/Turbo.png");
-	yellowBumperTexture = LoadTexture("Assets/YellowBumper.png");
-	redBumperTexture = LoadTexture("Assets/RedBumper.png");
-	blueBumperTexture = LoadTexture("Assets/BlueBumper.png");
-	bordersTexture = LoadTexture("Assets/Borders.png");
-	leftTriangleBumper = LoadTexture("Assets/leftTriangleBumper.png");
-	rightTriangleBumper = LoadTexture("Assets/rightTriangleBumper.png");
-	sNailTexture = LoadTexture("Assets/sNail.png");
-	rightFlipperTexture = LoadTexture("Assets/rightFlipper.png");
-	leftFlipperTexture = LoadTexture("Assets/leftFlipper.png");
-	rightSlugTexture = LoadTexture("Assets/rightSlug.png");
-	leftSlugTexture = LoadTexture("Assets/leftSlug.png");
-	controls = LoadTexture("Assets/controls_menu.png");
+	ballTexture = LoadTexture("Assets/Textures/Turbo.png");
+	yellowBumperTexture = LoadTexture("Assets/Textures/YellowBumper.png");
+	redBumperTexture = LoadTexture("Assets/Textures/RedBumper.png");
+	blueBumperTexture = LoadTexture("Assets/Textures/BlueBumper.png");
+	bordersTexture = LoadTexture("Assets/Textures/Borders.png");
+	leftTriangleBumper = LoadTexture("Assets/Textures/leftTriangleBumper.png");
+	rightTriangleBumper = LoadTexture("Assets/Textures/rightTriangleBumper.png");
+	sNailTexture = LoadTexture("Assets/Textures/sNail.png");
+	rightFlipperTexture = LoadTexture("Assets/Textures/rightFlipper.png");
+	leftFlipperTexture = LoadTexture("Assets/Textures/leftFlipper.png");
+	rightSlugTexture = LoadTexture("Assets/Textures/rightSlug.png");
+	leftSlugTexture = LoadTexture("Assets/Textures/leftSlug.png");
+	controls = LoadTexture("Assets/Textures/controls_menu.png");
 
 	bumperHit = LoadSound("Assets/Sounds/bumper_hit.wav");
 	flipper = LoadSound("Assets/Sounds/flipper_no_hit.wav");
@@ -894,6 +894,7 @@ bool ModuleGame::CleanUp()
 	UnloadTexture(leftFlipperTexture);
 	UnloadTexture(rightSlugTexture);
 	UnloadTexture(leftSlugTexture);
+	UnloadTexture(controls);
 
 	TraceLog(LOG_INFO, "UNLOADING AUDIO");
 	UnloadSound(bumperHit);
