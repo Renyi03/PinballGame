@@ -11,29 +11,7 @@
 #include "Miku.h"
 #include "Flipper.h"
 #include "Launcher.h"
-
-class MultiplierZone : public PhysicEntity
-{
-public:
-	MultiplierZone(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, int _multiplier, Texture2D _texture)
-		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 2) 
-		, multiplier(_multiplier)
-		, texture(_texture)
-	{
-	}
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		Vector2 position{ (float)x, (float)y };
-		DrawTexture(texture, x - 22, y - 22, WHITE);
-	}
-
-private:
-	int multiplier;
-	Texture2D texture;
-};
-
+#include "Multiplier.h"
 
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
