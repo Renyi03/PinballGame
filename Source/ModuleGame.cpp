@@ -15,13 +15,18 @@
 class MultiplierZone : public PhysicEntity
 {
 public:
-	MultiplierZone(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, int _multiplier)
+	MultiplierZone(ModulePhysics* physics, int _x, int _y, int _radius, Module* _listener, int _multiplier, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircleSensor(_x, _y, _radius), _listener, EntityType::MULTIPLIER, 0, 2) 
 		, multiplier(_multiplier)
+		, texture(_texture)
 	{
 	}
 	void Update() override
 	{
+		int x, y;
+		body->GetPhysicPosition(x, y);
+		Vector2 position{ (float)x, (float)y };
+		DrawTexture(texture, x - 22, y - 22, WHITE);
 	}
 
 private:
@@ -154,10 +159,6 @@ bool ModuleGame::Start()
 	entities.emplace_back(U);
 	TraceLog(LOG_INFO, "Created U - entities.size(): %d", entities.size());
 
-	ball = new Ball(App->physics, 480, 200, this, ballTexture);
-	entities.emplace_back(ball);
-	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
-
 	leftFlipperEntity = new LeftFlipper(App->physics, SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT - 140, this, leftJoint, leftFlipperTexture);
 	entities.emplace_back(leftFlipperEntity);
 	TraceLog(LOG_INFO, "Created Left Flipper - entities.size(): %d", entities.size());
@@ -166,9 +167,12 @@ bool ModuleGame::Start()
 	entities.emplace_back(rightFlipperEntity);
 	TraceLog(LOG_INFO, "Created Right Flipper - entities.size(): %d", entities.size());
 
-	entities.emplace_back(new MultiplierZone(App->physics, 138, 344, 22, this, 2));
+	entities.emplace_back(new MultiplierZone(App->physics, 138, 344, 22, this, 2, multiplierTexture));
 	TraceLog(LOG_INFO, "Created Multiplier zone - entities.size(): %d", entities.size());
 
+	ball = new Ball(App->physics, 480, 200, this, ballTexture);
+	entities.emplace_back(ball);
+	TraceLog(LOG_INFO, "Created Ball- entities.size(): %d", entities.size());
 
 
 	TraceLog(LOG_INFO, "=== Finished entity creation ===");
@@ -465,7 +469,6 @@ update_status ModuleGame::Update()
 	DrawTexture(sNailTexture, 302, 163, WHITE);
 	DrawTexture(rightSlugTexture, 347, 580, WHITE);
 	DrawTexture(leftSlugTexture, 32, 635, WHITE);
-	DrawTexture(multiplierTexture, 138, 344, WHITE);
 
 	if (IsKeyPressed(KEY_H)) {
 		controlsMenu = !controlsMenu;
