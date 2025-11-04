@@ -56,6 +56,7 @@ update_status ModuleWindow::PreUpdate()
 
 update_status ModuleWindow::Update()
 {
+	// Changes target FPS
 	if (IsKeyPressed(KEY_F2))
 	{
 		targetFPS = (targetFPS == 60) ? 30 : 60;

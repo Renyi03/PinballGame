@@ -12,7 +12,12 @@
 
 class PhysBody;
 class PhysicEntity;
-
+class Ball;
+class BoardTriangleR;
+class SpringLauncherEntity;
+class LeftFlipper;
+class RightFlipper;
+class Miku;
 
 class ModuleGame : public Module
 {
@@ -23,14 +28,73 @@ public:
 	bool Start();
 	update_status Update();
 	bool CleanUp();
+	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
+	void AddScore(int points);
+	void MultiplyScore(double multiplier);
+	void MikuCombo();
 
 public:
-	std::vector<PhysicEntity*> entities;
+	std::vector<PhysicEntity*> entities; //Vector where all the entities will be stored
+	//Variables defining the textures
 	Texture2D ballTexture;
+	Texture2D yellowBumperTexture;
+	Texture2D redBumperTexture;
+	Texture2D blueBumperTexture;
+	Texture2D bordersTexture;
+	Texture2D leftTriangleBumper;
+	Texture2D rightTriangleBumper;
+	Texture2D sNailTexture;
+	Texture2D mTexture;
+	Texture2D iTexture;
+	Texture2D kTexture;
+	Texture2D uTexture;
+	Texture2D mTextureShine;
+	Texture2D iTextureShine;
+	Texture2D kTextureShine;
+	Texture2D uTextureShine;
+	Texture2D rightFlipperTexture;
+	Texture2D leftFlipperTexture;
+	Texture2D rightSlugTexture;
+	Texture2D leftSlugTexture;
+	Texture2D controls;
+	Texture2D multiplierTexture;
 
+	bool changeGravity = false;
+	bool bounceMode = false;
+	bool controlsMenu = false;
 	void CreateBall();
-	PhysBody* boardBody;
-	PhysBody* ball;
+
 	b2RevoluteJoint* leftJoint;
 	b2RevoluteJoint* rightJoint;
+	Ball* ball;
+	BoardTriangleR* boardTriangleR;
+	SpringLauncherEntity* springLauncherEntity;
+	LeftFlipper* leftFlipperEntity;
+	RightFlipper* rightFlipperEntity;
+
+	Miku* M;
+	Miku* I;
+	Miku* K;
+	Miku* U;
+
+	int currentScore = 0;
+	int scoreMultiplier = 1;
+	int previousScore = 0;
+	int highestScore = 0;
+	int totalBalls = 3;     // Max balls per round
+	int currentBall = 1;    // How many have been used
+	bool roundOver = false; // To prevent respawning after the last ball
+	bool isMultiplied = false;
+	bool flipperSound = true;
+	int mikuCtr = 0; //The amount of "Miku sensors" that the player has activated with the ball
+
+	//Variables defining the music and sounds
+	Music bgm;
+	Sound bumperHit;
+	Sound flipper;
+	Sound miku;
+	Sound spring;
+	Sound wallHit;
+	Sound multiplierSound;
+	Sound letterActivate;
 };

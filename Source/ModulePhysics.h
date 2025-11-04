@@ -39,7 +39,7 @@ public:
 };
 
 // Module --------------------------------------
-class ModulePhysics : public Module, public b2ContactListener // TODO
+class ModulePhysics : public Module, public b2ContactListener
 {
 public:
 	ModulePhysics(Application* app, bool start_enabled = true);
@@ -51,6 +51,7 @@ public:
 	bool CleanUp();
 
 	PhysBody* CreateCircle(int x, int y, int radius);
+	PhysBody* CreateCircleSensor(int x, int y, int radius);
 	PhysBody* CreateRectangle(int x, int y, int width, int height);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
 	PhysBody* CreateChain(int x, int y, const int* points, int size);
@@ -65,10 +66,12 @@ public:
 
 
 	// b2ContactListener ---
-	void StartContact(b2Contact* contact);
+	void BeginContact(b2Contact* contact) override;
+	b2World* world = nullptr;
+	void DestroyBody(PhysBody* pbody);
 
 private:
-
-	b2World* world = nullptr;
+	b2Body* ground = nullptr;
+	b2MouseJoint* mouse_joint = nullptr;
 	bool debug;
 };
