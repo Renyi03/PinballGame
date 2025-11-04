@@ -5,7 +5,7 @@
 Welcome to the Snailiest Race, the high-speed, highly-slimy pinball experience!
 Our game is all about snails… FAST SNAILS… SNAIL RACES!!!
 
-You’ll encounter every kind of snail imaginable — sea snails, shell-less snails, shells without snails, and even sNails.
+You’ll encounter every kind of snail imaginable: sea snails, shell-less snails, shells without snails, and even sNails.
 Each bounce, flip, and ricochet sends your snail racing across the board towards the finish line.
 
 And, of course, this spectacle wouldn’t be complete without the talented, brilliant, incredible, amazing, showstopping, spectacular Hatsune Miku, who has blessed our pinball arena with her presence.
@@ -33,6 +33,7 @@ On your marks, get set, ready, GO!
 | Launch Ball | v (down arrow) |
 | Invert Gravity | G |
 | Bounce Mode | B |
+| Toggle Menu | H |
 | Debug | F1 |
 | Change Target FPS | F2 |
 
@@ -47,6 +48,3 @@ On your marks, get set, ready, GO!
 
 This project is licensed under an unmodified MIT license, which is an OSI-certified license that allows static linking with closed source software. Check [LICENSE](LICENSE) for further details.
 
-{AdditionalLicenses}
-
-{AdditionalLicenses}
