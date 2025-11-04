@@ -302,6 +302,8 @@ void ModuleGame::MikuCombo()
 // Update: draw background
 update_status ModuleGame::Update()
 {
+	DrawTexture(bordersTexture, 0, 0, WHITE);
+	
 	if (!roundOver) {
 		for (auto& entity : entities) {
 			Ball* ball = dynamic_cast<Ball*>(entity);
@@ -440,7 +442,6 @@ update_status ModuleGame::Update()
 		}
 	}
 
-	DrawTexture(bordersTexture, 0, 0, WHITE);
 	DrawTexture(leftTriangleBumper, 82, 604, WHITE);
 	DrawTexture(rightTriangleBumper, 337, 604, WHITE);
 	DrawTexture(sNailTexture, 244, 163, WHITE);
