@@ -37,12 +37,18 @@ On your marks, get set, ready, GO!
 | Debug | F1 |
 | Change Target FPS | F2 |
 
+## Insporation Picture for Board
+![insporation picture](Assets/Pictures/inspo.webp)
+
 ## Developers
 
  - Sofia Barja - Programmer/Game Designer
  - Kirsten Neubauer - Programmer/Game Designer
  - Clara Sanchez - Programmer/Game Designer
  - Yin Ye - Programmer/Game Designer
+
+## GitHub Link
+https://github.com/Renyi03/PinballGame
 
 ## License
 
