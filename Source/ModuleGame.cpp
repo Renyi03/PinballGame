@@ -765,6 +765,7 @@ bool ModuleGame::Start()
 	miku = LoadSound("Assets/Sounds/miku.wav");
 	wallHit = LoadSound("Assets/Sounds/wall_hit.wav");
 	multiplierSound = LoadSound("Assets/Sounds/multiplier.wav");
+	letterActivate = LoadSound("Assets/Sounds/letter_activate.wav");
 	bgm = LoadMusicStream("Assets/Sounds/bgm.wav");
 	SetMusicVolume(bgm, 0.10f);
 	PlayMusicStream(bgm);
@@ -899,6 +900,7 @@ void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			if (miku == true) {
 				// Adds to the counter to know how many sensors have been activated
 				++mikuCtr;
+				PlaySound(letterActivate);
 				// We put the boolean of the sensor in false so it can't be activated again
 				entities[i]->isMiku = false;
 				TraceLog(LOG_INFO, "Miku counter: %d", mikuCtr);

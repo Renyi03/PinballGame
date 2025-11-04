@@ -88,4 +88,5 @@ public:
 	Sound spring;
 	Sound wallHit;
 	Sound multiplierSound;
+	Sound letterActivate;
 };
